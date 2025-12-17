@@ -1,0 +1,233 @@
+[
+  {
+    "id": "a_1765879697062",
+    "title": "wow",
+    "description": "he isi lj l kjlkj lkd jsl kjl kjl kjl kjl jl jk",
+    "category": "Death",
+    "date": "2025-12-16",
+    "imageUrl": "https://picsum.photos/200/300",
+    "target": {
+      "wards": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765881305145",
+    "title": "fdsljfl",
+    "description": "dslkjf",
+    "category": "Program",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765881879616",
+    "title": "sdfssf",
+    "description": "dfs",
+    "category": "Program",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765881952184",
+    "title": "dfs",
+    "description": "dsf",
+    "category": "Notice",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765882009028",
+    "title": "sfd",
+    "description": "fd",
+    "category": "Death",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765882714762",
+    "title": "sfdl",
+    "description": "ll",
+    "category": "Program",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 2",
+        "Ward 1",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765882935386",
+    "title": "sdflj",
+    "description": "dslfj",
+    "category": "Program",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765882981154",
+    "title": "sdfljsdfljl",
+    "description": "dslfkjsfdl",
+    "category": "Death",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 4",
+        "Ward 3",
+        "Ward 2",
+        "Ward 1"
+      ],
+      "gender": "All",
+      "maxAge": -1
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765883236792",
+    "title": "sdfl",
+    "description": "dflsjf",
+    "category": "Death",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 4",
+        "Ward 3",
+        "Ward 2",
+        "Ward 1"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  },
+  {
+    "id": "a_1765883480151",
+    "title": "payemnt update ",
+    "description": "sdfljsfd",
+    "category": "Program",
+    "date": "2025-12-16",
+    "imageUrl": "",
+    "target": {
+      "wards": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4"
+      ],
+      "gender": "All"
+    },
+    "stats": {
+      "total": 0,
+      "sent": 0,
+      "delivered": 0,
+      "read": 0
+    }
+  }
+]

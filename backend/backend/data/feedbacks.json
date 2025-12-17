@@ -1,0 +1,10 @@
+[
+  {
+    "id": "fb1",
+    "familyId": "f1",
+    "senderName": "Abdul Rahman",
+    "message": "The street lights in Ward 1 are not working.",
+    "date": "2023-11-10",
+    "isRead": false
+  }
+]

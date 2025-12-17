@@ -1,0 +1,14 @@
+[
+  {
+    "id": "l1",
+    "action": "Payment Received",
+    "details": "Family MH-001 paid annual fee",
+    "timestamp": "2 mins ago"
+  },
+  {
+    "id": "l2",
+    "action": "New Member Request",
+    "details": "Zaid added to MH-001",
+    "timestamp": "1 hour ago"
+  }
+]

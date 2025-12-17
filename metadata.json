@@ -1,0 +1,5 @@
+{
+  "name": "Modern Mahall",
+  "description": "A PWA-ready community management system for Mahall committees featuring WhatsApp-based authentication, family management, and AI-assisted announcements.",
+  "requestFramePermissions": []
+}

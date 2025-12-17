@@ -1,0 +1,46 @@
+[
+  {
+    "id": "p_1765879786107",
+    "familyId": "f_1765878515920",
+    "memberId": "m_1765878515920",
+    "memberName": "Majeed",
+    "amount": 100,
+    "title": "Fine/Fee",
+    "date": "2025-12-16",
+    "type": "Fine",
+    "status": "Paid"
+  },
+  {
+    "id": "p_1765879811155",
+    "familyId": "f_1765878515920",
+    "memberId": "m_1765878515920",
+    "memberName": "Majeed",
+    "amount": 100,
+    "title": "okkk",
+    "date": "2025-12-16",
+    "type": "Fine",
+    "status": "Paid"
+  },
+  {
+    "id": "p_1765881272702",
+    "familyId": "f_1765878515920",
+    "memberId": "m_1765878515920",
+    "memberName": "Majeed",
+    "amount": 100,
+    "title": "Fine/Fee",
+    "date": "2025-12-16",
+    "type": "Fine",
+    "status": "Paid"
+  },
+  {
+    "id": "p_1765883639426",
+    "familyId": "f_1765882689772",
+    "memberId": "m_1765882689772",
+    "memberName": "wow",
+    "amount": 100,
+    "title": "Fine/Fee",
+    "date": "2025-12-16",
+    "type": "Fine",
+    "status": "Paid"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "id": "admin1",
+    "mobile": "9999999999",
+    "otp": "111111",
+    "role": "ADMIN",
+    "name": "Super Admin"
+  }
+]

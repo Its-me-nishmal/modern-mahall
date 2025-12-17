@@ -1,0 +1,31 @@
+[
+  {
+    "id": "a1",
+    "title": "Eid Gathering 2024",
+    "description": "All members are invited to the community hall for Eid celebrations. Lunch will be served.",
+    "category": "Program",
+    "date": "2023-11-15",
+    "location": "Community Hall",
+    "imageUrl": "https://images.unsplash.com/photo-1542841791-1925b02a2bbb?auto=format&fit=crop&q=80&w=1000",
+    "stats": {
+      "total": 45,
+      "sent": 45,
+      "delivered": 42,
+      "read": 30
+    }
+  },
+  {
+    "id": "a2",
+    "title": "Janaza Notice",
+    "description": "We regret to inform you of the passing of Mr. Ahmed (Ward 3). Janaza prayer at 4 PM.",
+    "category": "Death",
+    "date": "2023-11-20",
+    "location": "Central Masjid",
+    "stats": {
+      "total": 45,
+      "sent": 45,
+      "delivered": 44,
+      "read": 40
+    }
+  }
+]

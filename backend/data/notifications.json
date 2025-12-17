@@ -1,0 +1,171 @@
+[
+  {
+    "id": "notif_1765882936164_o7wcg8u3o",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "sdflj",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765882935386"
+    },
+    "timestamp": "2025-12-16T11:02:16.164Z",
+    "read": false
+  },
+  {
+    "id": "notif_1765882936336_t5u661ih4",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "sdflj",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765882935386"
+    },
+    "timestamp": "2025-12-16T11:02:16.336Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765882936704_c3fr4slxw",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "sdflj",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765882935386"
+    },
+    "timestamp": "2025-12-16T11:02:16.704Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765882981749_52hxgwpnw",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "sdfljsdfljl",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765882981154"
+    },
+    "timestamp": "2025-12-16T11:03:01.749Z",
+    "read": false
+  },
+  {
+    "id": "notif_1765882981915_fjdm74599",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "sdfljsdfljl",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765882981154"
+    },
+    "timestamp": "2025-12-16T11:03:01.915Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765882982331_wet1w0l9m",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "sdfljsdfljl",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765882981154"
+    },
+    "timestamp": "2025-12-16T11:03:02.331Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765883237673_5wkdro75n",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "sdfl",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765883236792"
+    },
+    "timestamp": "2025-12-16T11:07:17.673Z",
+    "read": false
+  },
+  {
+    "id": "notif_1765883237918_u1wmqugua",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "sdfl",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765883236792"
+    },
+    "timestamp": "2025-12-16T11:07:17.918Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765883238229_ycjbabnq8",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "sdfl",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765883236792"
+    },
+    "timestamp": "2025-12-16T11:07:18.229Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765883480829_0ll8w7f4h",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "payemnt update ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765883480151"
+    },
+    "timestamp": "2025-12-16T11:11:20.829Z",
+    "read": false
+  },
+  {
+    "id": "notif_1765883480999_gnjqtbc7b",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "payemnt update ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765883480151"
+    },
+    "timestamp": "2025-12-16T11:11:20.999Z",
+    "read": false
+  },
+  {
+    "id": "notif_1765883481427_0s81qydau",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "payemnt update ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765883480151"
+    },
+    "timestamp": "2025-12-16T11:11:21.427Z",
+    "read": false
+  },
+  {
+    "id": "notif_1765883640152_ah4d17xz8",
+    "userId": "m_1765882689772",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for Fine/Fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "p_1765883639426"
+    },
+    "timestamp": "2025-12-16T11:14:00.152Z",
+    "read": false
+  }
+]
