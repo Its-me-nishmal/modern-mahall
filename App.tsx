@@ -9,7 +9,7 @@ import NotificationInbox from './components/NotificationInbox';
 import { User, Family, Status, UserRole, FamilyMember, Log, Announcement, Payment, Feedback, TargetingCriteria } from './types';
 import { LogOut, Bell, Loader2 } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://modern-mahall-two.vercel.app/api';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Loader2, ShieldCheck, UserPlus, Home, Clock } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://modern-mahall-two.vercel.app/api';
 
 interface AuthProps {
   onLogin: (token: string, user: any) => Promise<void>;
