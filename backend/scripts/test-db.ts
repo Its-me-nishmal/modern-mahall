@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 // Load environment
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config();
 
 console.log('\n🔍 Database Configuration Test\n');
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');

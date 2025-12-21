@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises';
 
 // Load environment variables
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config();
 
 import { MongoDatabase } from '../db/mongodb.js';
 import type { IFamily, IAdmin, IPayment, IAnnouncement, INotification, IFeedback, ISubscription } from '../db/interface.js';
