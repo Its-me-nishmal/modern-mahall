@@ -10,7 +10,7 @@
       "id": "a_1765882935386"
     },
     "timestamp": "2025-12-16T11:02:16.164Z",
-    "read": false
+    "read": true
   },
   {
     "id": "notif_1765882936336_t5u661ih4",
@@ -49,7 +49,7 @@
       "id": "a_1765882981154"
     },
     "timestamp": "2025-12-16T11:03:01.749Z",
-    "read": false
+    "read": true
   },
   {
     "id": "notif_1765882981915_fjdm74599",
@@ -88,7 +88,7 @@
       "id": "a_1765883236792"
     },
     "timestamp": "2025-12-16T11:07:17.673Z",
-    "read": false
+    "read": true
   },
   {
     "id": "notif_1765883237918_u1wmqugua",
@@ -127,7 +127,7 @@
       "id": "a_1765883480151"
     },
     "timestamp": "2025-12-16T11:11:20.829Z",
-    "read": false
+    "read": true
   },
   {
     "id": "notif_1765883480999_gnjqtbc7b",
@@ -140,7 +140,7 @@
       "id": "a_1765883480151"
     },
     "timestamp": "2025-12-16T11:11:20.999Z",
-    "read": false
+    "read": true
   },
   {
     "id": "notif_1765883481427_0s81qydau",
@@ -153,7 +153,7 @@
       "id": "a_1765883480151"
     },
     "timestamp": "2025-12-16T11:11:21.427Z",
-    "read": false
+    "read": true
   },
   {
     "id": "notif_1765883640152_ah4d17xz8",
@@ -166,6 +166,1241 @@
       "id": "p_1765883639426"
     },
     "timestamp": "2025-12-16T11:14:00.152Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765954955151_3202pc0ze",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "wokkk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765954953233"
+    },
+    "timestamp": "2025-12-17T07:02:35.151Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765954955335_e70k7uog1",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "wokkk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765954953233"
+    },
+    "timestamp": "2025-12-17T07:02:35.336Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765954955693_d866vcu6t",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "wokkk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765954953233"
+    },
+    "timestamp": "2025-12-17T07:02:35.693Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955212389_eq99tlzyt",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "okw",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955210542"
+    },
+    "timestamp": "2025-12-17T07:06:52.390Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955212532_0t4ttdvdl",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "okw",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955210542"
+    },
+    "timestamp": "2025-12-17T07:06:52.532Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955212925_wcisx9w3m",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "okw",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955210542"
+    },
+    "timestamp": "2025-12-17T07:06:52.925Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955321472_0fetob8x7",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "fdjls",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955320195"
+    },
+    "timestamp": "2025-12-17T07:08:41.472Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955321826_0n2psxm0i",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "fdjls",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955320195"
+    },
+    "timestamp": "2025-12-17T07:08:41.826Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955321996_b42eg1dn2",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "fdjls",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955320195"
+    },
+    "timestamp": "2025-12-17T07:08:41.997Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955935268_gjoy70qis",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "kkkk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955933382"
+    },
+    "timestamp": "2025-12-17T07:18:55.268Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955935448_dqyl8j09t",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "kkkk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955933382"
+    },
+    "timestamp": "2025-12-17T07:18:55.448Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765955935812_yr8tcvlxl",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "kkkk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765955933382"
+    },
+    "timestamp": "2025-12-17T07:18:55.812Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765970586865_t93opoqfl",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "wowowoow",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765970585617"
+    },
+    "timestamp": "2025-12-17T11:23:06.865Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765970587007_c26pqjfem",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "wowowoow",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765970585617"
+    },
+    "timestamp": "2025-12-17T11:23:07.007Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765970587363_yc6p99l8z",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "wowowoow",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1765970585617"
+    },
+    "timestamp": "2025-12-17T11:23:07.363Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765970732303_g2bpsavgn",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for Fine/Fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "p_1765970731421"
+    },
+    "timestamp": "2025-12-17T11:25:32.303Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765970923748_qdpiis24h",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for Fine/Fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "p_1765970923332"
+    },
+    "timestamp": "2025-12-17T11:28:43.748Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765971066357_usxdhojlc",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "p_1765970923332"
+    },
+    "timestamp": "2025-12-17T11:31:06.357Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765971080800_pezaecydm",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for Fine/Fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "p_1765971080068"
+    },
+    "timestamp": "2025-12-17T11:31:20.800Z",
+    "read": true
+  },
+  {
+    "id": "notif_1765971084152_uxsq7thu3",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "p_1765971080068"
+    },
+    "timestamp": "2025-12-17T11:31:24.152Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766021175995_l5ygn7naw",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹300 for Register Fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "p_1766021174985"
+    },
+    "timestamp": "2025-12-18T01:26:15.995Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766021236650_e2j6z6gvs",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹300 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "p_1766021174985"
+    },
+    "timestamp": "2025-12-18T01:27:16.650Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766021507828_fcvhdddz1",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766021506802"
+    },
+    "timestamp": "2025-12-18T01:31:47.828Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766021508024_e5qcpj415",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766021506802"
+    },
+    "timestamp": "2025-12-18T01:31:48.024Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766021508378_zvpx4wwpm",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766021506802"
+    },
+    "timestamp": "2025-12-18T01:31:48.378Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766021738134_rlh5jv4bz",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766021737265"
+    },
+    "timestamp": "2025-12-18T01:35:38.134Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766021738370_vuj02jakt",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766021737265"
+    },
+    "timestamp": "2025-12-18T01:35:38.370Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766021738637_rrrxktjx7",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766021737265"
+    },
+    "timestamp": "2025-12-18T01:35:38.637Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766022682836_yu9o00cnv",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766022681657"
+    },
+    "timestamp": "2025-12-18T01:51:22.836Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766022682980_wqp854sx3",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766022681657"
+    },
+    "timestamp": "2025-12-18T01:51:22.980Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766022683378_w7a1ciglq",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "🕊️ വിയോഗ വാർത്ത",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766022681657"
+    },
+    "timestamp": "2025-12-18T01:51:23.378Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766022759241_2e9l4bo2h",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "Medicine Needed",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766022758569"
+    },
+    "timestamp": "2025-12-18T01:52:39.242Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766022759368_lwgk6wp4p",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "Medicine Needed",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766022758569"
+    },
+    "timestamp": "2025-12-18T01:52:39.368Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766022759810_qgppnh1rp",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "Medicine Needed",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766022758569"
+    },
+    "timestamp": "2025-12-18T01:52:39.810Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766023546395_31208ozmm",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "data collect ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766023545494"
+    },
+    "timestamp": "2025-12-18T02:05:46.396Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766023546646_p6tqriomh",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "data collect ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766023545494"
+    },
+    "timestamp": "2025-12-18T02:05:46.646Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766023546948_akoh1asui",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "data collect ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766023545494"
+    },
+    "timestamp": "2025-12-18T02:05:46.948Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766024089804_9w0vhg71c",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "nice",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024088822"
+    },
+    "timestamp": "2025-12-18T02:14:49.804Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766024089965_vb16he7w1",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "nice",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024088822"
+    },
+    "timestamp": "2025-12-18T02:14:49.965Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766024090336_tbwep1v50",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "nice",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024088822"
+    },
+    "timestamp": "2025-12-18T02:14:50.336Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766024294177_zyw6nonrh",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "lkfjlsjdfl lj lj ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024293174"
+    },
+    "timestamp": "2025-12-18T02:18:14.177Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766024294343_luy0bctjd",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "lkfjlsjdfl lj lj ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024293174"
+    },
+    "timestamp": "2025-12-18T02:18:14.344Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766024294783_a6beovd12",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "lkfjlsjdfl lj lj ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024293174"
+    },
+    "timestamp": "2025-12-18T02:18:14.783Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766024361363_n87vu2ef5",
+    "userId": "m_1765882689772",
+    "title": "📢 New Announcement",
+    "body": "hiijkjk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024360714"
+    },
+    "timestamp": "2025-12-18T02:19:21.364Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766024361548_qji9l3ls6",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "hiijkjk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024360714"
+    },
+    "timestamp": "2025-12-18T02:19:21.548Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766024362163_dqx44rld6",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "hiijkjk",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766024360714"
+    },
+    "timestamp": "2025-12-18T02:19:22.163Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766027699707_7crbbmc2t",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹400 for annual fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766027698698_ima63lgyo"
+    },
+    "timestamp": "2025-12-18T03:14:59.707Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766027699986_t1pv4c28g",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹400 for annual fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766027699745_oldbjzyvv"
+    },
+    "timestamp": "2025-12-18T03:14:59.986Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766027700380_bjsf7mxvu",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹400 for annual fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766027699991_8fku5vsux"
+    },
+    "timestamp": "2025-12-18T03:15:00.380Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766027938030_631ug3kmy",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for Fine/Fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "p_1766027937527"
+    },
+    "timestamp": "2025-12-18T03:18:58.030Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766028053990_dnhn8znhl",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "to nishmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766028053053"
+    },
+    "timestamp": "2025-12-18T03:20:53.990Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766028054337_xp1zxgc4u",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "to nishmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766028053053"
+    },
+    "timestamp": "2025-12-18T03:20:54.337Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766028054537_ju30zzp13",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "to nishmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766028053053"
+    },
+    "timestamp": "2025-12-18T03:20:54.537Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766028296937_g262n9ibo",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹400 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "pay_1766027699745_oldbjzyvv"
+    },
+    "timestamp": "2025-12-18T03:24:56.938Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766028331178_fhv452di0",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "lok",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766028330318"
+    },
+    "timestamp": "2025-12-18T03:25:31.178Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766028331512_e8qkkit4v",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "lok",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766028330318"
+    },
+    "timestamp": "2025-12-18T03:25:31.512Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766028749681_vltqdzv3z",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "nice to meet you  to nishmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766028748777"
+    },
+    "timestamp": "2025-12-18T03:32:29.681Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766028750042_7d26a567o",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "nice to meet you  to nishmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766028748777"
+    },
+    "timestamp": "2025-12-18T03:32:30.042Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766030883028_5hh48jt54",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "to nijmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766030882130"
+    },
+    "timestamp": "2025-12-18T04:08:03.028Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766030883456_c78z2k65t",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "to nijmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766030882130"
+    },
+    "timestamp": "2025-12-18T04:08:03.456Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766030883956_ur0g32o0g",
+    "userId": "m_1766028861132",
+    "title": "📢 New Announcement",
+    "body": "to nijmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766030882130"
+    },
+    "timestamp": "2025-12-18T04:08:03.956Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031472946_i2ngnr54h",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "to nijmal test 5 ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031472090"
+    },
+    "timestamp": "2025-12-18T04:17:52.946Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031473467_qtbht95hw",
+    "userId": "m_1766028861132",
+    "title": "📢 New Announcement",
+    "body": "to nijmal test 5 ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031472090"
+    },
+    "timestamp": "2025-12-18T04:17:53.467Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031473812_20b0xh6n2",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "to nijmal test 5 ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031472090"
+    },
+    "timestamp": "2025-12-18T04:17:53.812Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031512226_zcy5trp83",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "to nijmal only",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031511455"
+    },
+    "timestamp": "2025-12-18T04:18:32.226Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031514084_rlmrhfchq",
+    "userId": "m_1766028861132",
+    "title": "📢 New Announcement",
+    "body": "to nijmal only",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031511455"
+    },
+    "timestamp": "2025-12-18T04:18:34.084Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031514937_o76fjhtmn",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "to nijmal only",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031511455"
+    },
+    "timestamp": "2025-12-18T04:18:34.937Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031789659_8lgmssvwc",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "ok to nijmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031788581"
+    },
+    "timestamp": "2025-12-18T04:23:09.659Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031790049_0p1qqszp2",
+    "userId": "m_1766028861132",
+    "title": "📢 New Announcement",
+    "body": "ok to nijmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031788581"
+    },
+    "timestamp": "2025-12-18T04:23:10.049Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766031790218_266lq4ew7",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "ok to nijmal",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766031788581"
+    },
+    "timestamp": "2025-12-18T04:23:10.218Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766039614594_yz9cio92u",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "to majeed ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766039612828"
+    },
+    "timestamp": "2025-12-18T06:33:34.594Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766039614747_8231tfs5z",
+    "userId": "m_1766038041364",
+    "title": "📢 New Announcement",
+    "body": "to majeed ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766039612828"
+    },
+    "timestamp": "2025-12-18T06:33:34.747Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766039615113_ib0lr8iva",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "to majeed ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766039612828"
+    },
+    "timestamp": "2025-12-18T06:33:35.113Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766039615313_yxhnyn27y",
+    "userId": "m_1766028861132",
+    "title": "📢 New Announcement",
+    "body": "to majeed ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766039612828"
+    },
+    "timestamp": "2025-12-18T06:33:35.313Z",
+    "read": true
+  },
+  {
+    "id": "notif_1766039615613_vh8473jt6",
+    "userId": "m_1766038723856",
+    "title": "📢 New Announcement",
+    "body": "to majeed ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766039612828"
+    },
+    "timestamp": "2025-12-18T06:33:35.613Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766039615861_wxh2svmr4",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "to majeed ",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766039612828"
+    },
+    "timestamp": "2025-12-18T06:33:35.861Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766040585447_zxw8tdqa5",
+    "userId": "m_1766025764059",
+    "title": "📢 New Announcement",
+    "body": "youtube programms",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766040583542"
+    },
+    "timestamp": "2025-12-18T06:49:45.447Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766040585780_dtcbpg0nj",
+    "userId": "m_1766038041364",
+    "title": "📢 New Announcement",
+    "body": "youtube programms",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766040583542"
+    },
+    "timestamp": "2025-12-18T06:49:45.780Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766040585933_tls6qw96l",
+    "userId": "m_1765878515920",
+    "title": "📢 New Announcement",
+    "body": "youtube programms",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766040583542"
+    },
+    "timestamp": "2025-12-18T06:49:45.933Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766040586288_7ywc2nbo8",
+    "userId": "m_1766028861132",
+    "title": "📢 New Announcement",
+    "body": "youtube programms",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766040583542"
+    },
+    "timestamp": "2025-12-18T06:49:46.288Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766040586438_nsk7ig6q7",
+    "userId": "m_1766038723856",
+    "title": "📢 New Announcement",
+    "body": "youtube programms",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766040583542"
+    },
+    "timestamp": "2025-12-18T06:49:46.439Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766040586885_9eeetbglg",
+    "userId": "admin_user_id",
+    "title": "📢 New Announcement",
+    "body": "youtube programms",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766040583542"
+    },
+    "timestamp": "2025-12-18T06:49:46.885Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766040587022_d4xhfrm0c",
+    "userId": "admin1",
+    "title": "📢 New Announcement",
+    "body": "youtube programms",
+    "type": "announcement",
+    "data": {
+      "type": "announcement",
+      "id": "a_1766040583542"
+    },
+    "timestamp": "2025-12-18T06:49:47.022Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766041155414_v2zzmj0jj",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹400 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "pay_1766027699991_8fku5vsux"
+    },
+    "timestamp": "2025-12-18T06:59:15.415Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766042895811_elkab63ev",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766042893988_r4ha52i9y"
+    },
+    "timestamp": "2025-12-18T07:28:15.811Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766042896068_m4pq8fuo2",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766042895820_ku2vfx1ta"
+    },
+    "timestamp": "2025-12-18T07:28:16.068Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766042896493_eutqest4b",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766042896077_8uk4xhj6x"
+    },
+    "timestamp": "2025-12-18T07:28:16.493Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766042896794_314pbawfj",
+    "userId": "m_1765878515920",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766042896512_vptbvquys"
+    },
+    "timestamp": "2025-12-18T07:28:16.794Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766042897455_8jehrypy6",
+    "userId": "m_1766038723856",
+    "title": "💰 New Payment Due",
+    "body": "Payment of ₹100 for fee",
+    "type": "payment",
+    "data": {
+      "type": "payment",
+      "id": "pay_1766042897188_rhx6yr0r4"
+    },
+    "timestamp": "2025-12-18T07:28:17.456Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766042914830_y3cs3zqc3",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "pay_1766042895820_ku2vfx1ta"
+    },
+    "timestamp": "2025-12-18T07:28:34.830Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766043093460_pea7phmqd",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "p_1766027937527"
+    },
+    "timestamp": "2025-12-18T07:31:33.460Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766043096297_17195ztaw",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "pay_1766042893988_r4ha52i9y"
+    },
+    "timestamp": "2025-12-18T07:31:36.297Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766043100488_chybosh0m",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "pay_1766042896077_8uk4xhj6x"
+    },
+    "timestamp": "2025-12-18T07:31:40.488Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766043104363_o5u9o18sm",
+    "userId": "m_1765878515920",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "pay_1766042896512_vptbvquys"
+    },
+    "timestamp": "2025-12-18T07:31:44.363Z",
+    "read": false
+  },
+  {
+    "id": "notif_1766043111428_e06raqvzx",
+    "userId": "m_1766038723856",
+    "title": "✅ Payment Confirmed",
+    "body": "Your payment of ₹100 has been confirmed",
+    "type": "payment_confirmed",
+    "data": {
+      "type": "payment_confirmed",
+      "id": "pay_1766042897188_rhx6yr0r4"
+    },
+    "timestamp": "2025-12-18T07:31:51.428Z",
     "read": false
   }
 ]

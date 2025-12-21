@@ -1,6 +1,6 @@
-import { MOCK_FAMILIES, MOCK_ANNOUNCEMENTS, MOCK_PAYMENTS, MOCK_FEEDBACK, MOCK_LOGS } from '../../services/mockData';
-import { writeData, initializeDB } from '../db/fsdb';
-import { Family, FamilyMember, Payment, Status, UserRole } from '../../types';
+import { MOCK_FAMILIES, MOCK_ANNOUNCEMENTS, MOCK_PAYMENTS, MOCK_FEEDBACK, MOCK_LOGS } from '../services/mockData.js';
+import { writeData, initializeDB } from '../db/fsdb.js';
+import { Family, FamilyMember, Payment, Status, UserRole } from '../types.js';
 
 // Admin User Seed
 const ADMIN_USER = {

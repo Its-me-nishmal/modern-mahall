@@ -78,61 +78,17 @@ const App: React.FC = () => {
     }
   };
 
-  const handleLogin = async (phone: string, otp: string) => {
+  const handleLogin = async (token: string, user: User) => {
     setIsLoading(true);
     try {
-      // Determine Role/Endpoint based on phone number
-      let role = UserRole.MEMBER;
-      let loginUrl = `${API_BASE_URL}/auth/login`;
+      // Store user and token
+      setUser(user);
+      setToken(token);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
 
-      if (phone === '9999999999') {
-        role = UserRole.ADMIN;
-        loginUrl = `${API_BASE_URL}/admin/login`;
-      }
-
-      const response = await fetch(loginUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobile: phone, otp: otp })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Check if new user needs onboarding
-        if (data.newUser) {
-          setOnboardingPhone(phone);
-          setIsOnboarding(true);
-          setIsLoading(false);
-          return;
-        }
-
-        // Existing user login
-        if (data.token) {
-          if (role === UserRole.ADMIN) {
-            // Admin success
-            const adminUser = { id: 'admin_user_id', phone, role: UserRole.ADMIN, name: 'Super Admin', familyId: null };
-            setUser(adminUser);
-            setToken(data.token);
-            localStorage.setItem('user', JSON.stringify(adminUser));
-            localStorage.setItem('token', data.token);
-            await fetchDataOnLogin(UserRole.ADMIN, undefined, data.token);
-          } else {
-            // Family Head/Member Login success
-            if (data.user) {
-              setUser(data.user);
-              setToken(data.token);
-              localStorage.setItem('user', JSON.stringify(data.user));
-              localStorage.setItem('token', data.token);
-              await fetchDataOnLogin(data.user.role, data.user.familyId, data.token);
-            } else {
-              throw new Error("Login successful but user details missing from response.");
-            }
-          }
-        }
-      } else {
-        throw new Error(data.message || 'Login failed');
-      }
+      // Fetch data based on user role
+      await fetchDataOnLogin(user.role, user.familyId, token);
     } catch (error) {
       console.error("Login Error:", error);
       alert(`Login failed: ${(error as Error).message}`);
@@ -142,14 +98,16 @@ const App: React.FC = () => {
     }
   };
 
-  const handleRegister = async (data: { headName: string; address: string; ward: string; age: number; gender: 'Male' | 'Female' }) => {
+  const handleRegister = async (data: { headName: string; address: string; ward: string; age: number; gender: 'Male' | 'Female' }, phoneArg?: string) => {
     setIsLoading(true);
     try {
+      const phoneToUse = phoneArg || onboardingPhone;
+
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phone: onboardingPhone,
+          phone: phoneToUse,
           ...data
         })
       });
@@ -394,8 +352,109 @@ const App: React.FC = () => {
   };
 
   const handleBulkPaymentCreate = async (amount: number, title: string, criteria: TargetingCriteria) => {
-    console.log('Admin action: Bulk Payment');
-    // TODO: Implement bulk payment creation
+    try {
+      // Get target members based on criteria
+      const targetMembers: Array<{ familyId: string; memberId: string; memberName: string }> = [];
+
+      // If specific member IDs are provided, use them directly
+      if (criteria.specificMemberIds && criteria.specificMemberIds.length > 0) {
+        families.forEach(family => {
+          family.members.forEach(member => {
+            if (criteria.specificMemberIds!.includes(member.id)) {
+              targetMembers.push({
+                familyId: family.id,
+                memberId: member.id,
+                memberName: member.name
+              });
+            }
+          });
+        });
+      } else {
+        // Use filter-based targeting
+        families.forEach(family => {
+          // Filter by ward if specified
+          if (criteria.wards && criteria.wards.length > 0 && !criteria.wards.includes(family.ward)) {
+            return;
+          }
+
+          // Filter by specific family IDs if in select mode
+          if (criteria.specificFamilyIds && criteria.specificFamilyIds.length > 0 && !criteria.specificFamilyIds.includes(family.id)) {
+            return;
+          }
+
+          family.members.forEach(member => {
+            // Filter by gender
+            if (criteria.gender && criteria.gender !== 'All' && member.gender !== criteria.gender) {
+              return;
+            }
+
+            // Filter by age range
+            if (criteria.minAge && member.age < criteria.minAge) {
+              return;
+            }
+            if (criteria.maxAge && member.age > criteria.maxAge) {
+              return;
+            }
+
+            // Filter by role
+            if (criteria.role === 'Head' && member.relation !== 'Head') {
+              return;
+            }
+            if (criteria.role === 'Member' && member.relation === 'Head') {
+              return;
+            }
+
+            targetMembers.push({
+              familyId: family.id,
+              memberId: member.id,
+              memberName: member.name
+            });
+          });
+        });
+      }
+
+      if (targetMembers.length === 0) {
+        alert('No members match the selected criteria');
+        return;
+      }
+
+      // Create payment for each target member
+      const createdPayments: Payment[] = [];
+      const today = new Date().toISOString().split('T')[0];
+
+      for (const target of targetMembers) {
+        const payment: Payment = {
+          id: `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          familyId: target.familyId,
+          memberId: target.memberId,
+          memberName: target.memberName,
+          amount,
+          title,
+          date: today,
+          type: title,
+          status: 'Pending'
+        };
+
+        const response = await fetch(`${API_BASE_URL}/data/payments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payment)
+        });
+
+        if (response.ok) {
+          const created = await response.json();
+          createdPayments.push(created);
+        }
+      }
+
+      // Update local state
+      setPayments([...payments, ...createdPayments]);
+      alert(`Successfully created ${createdPayments.length} payment demands!`);
+
+    } catch (error) {
+      console.error('Error creating bulk payments:', error);
+      alert('Failed to create bulk payments');
+    }
   };
 
   const handleMarkPaymentPaid = async (paymentId: string) => {
@@ -419,6 +478,29 @@ const App: React.FC = () => {
     } catch (error) {
       console.error('Error updating payment:', error);
       alert('Failed to update payment');
+    }
+  };
+
+  const handleDeletePayment = async (paymentId: string) => {
+    if (!confirm('Are you sure you want to delete this payment? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/data/payments/${paymentId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        setPayments(payments.filter(p => p.id !== paymentId));
+        alert('Payment deleted successfully!');
+      } else {
+        throw new Error('Failed to delete payment');
+      }
+    } catch (error) {
+      console.error('Error deleting payment:', error);
+      alert('Failed to delete payment');
     }
   };
 
@@ -622,7 +704,20 @@ const App: React.FC = () => {
   }
 
   if (!user) {
-    return <Auth onLogin={handleLogin} onRegister={() => alert("Registration is mocked/disabled; use Admin login for testing setup.")} />;
+    return (
+      <Auth
+        onLogin={handleLogin}
+        onRegister={(phone, name, houseName, ward, age, gender) => {
+          handleRegister({
+            headName: name,
+            address: houseName,
+            ward: ward,
+            age: age,
+            gender: gender
+          }, phone);
+        }}
+      />
+    );
   }
 
   return (
@@ -683,6 +778,7 @@ const App: React.FC = () => {
                   onBulkPaymentCreate={handleBulkPaymentCreate}
                   onCreatePayment={handleCreatePayment}
                   onMarkPaymentPaid={handleMarkPaymentPaid}
+                  onDeletePayment={handleDeletePayment}
                   onTabChange={handleAdminTabChange}
                 />
               ) : (
@@ -691,7 +787,10 @@ const App: React.FC = () => {
                     family={currentUserFamily}
                     announcements={announcements}
                     payments={payments}
+                    currentUserName={user?.name}
+                    isHead={user?.role === UserRole.HEAD}
                     onAddMember={handleAddMember}
+                    onUpdateMember={(memberId, updates) => handleEditMember(currentUserFamily.id, memberId, updates)}
                     onDeleteRequest={handleDeleteRequest}
                     onSendFeedback={handleSendFeedback}
                     onTabChange={handleMemberTabChange}

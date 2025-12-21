@@ -1,7 +1,11 @@
-// Custom Service Worker for Push Notifications
-/// <reference lib="webworker" />
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
-declare const self: ServiceWorkerGlobalScope;
+declare let self: ServiceWorkerGlobalScope;
+
+cleanupOutdatedCaches();
+precacheAndRoute(self.__WB_MANIFEST);
+
+// Custom Service Worker for Push Notifications
 
 // Install event
 self.addEventListener('install', (event) => {

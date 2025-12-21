@@ -11,7 +11,7 @@ export enum Status {
   DELETED_PENDING = 'deleted_pending'
 }
 
-export type AnnouncementCategory = 'Program' | 'Death' | 'Notice' | 'Emergency';
+export type AnnouncementCategory = 'Program' | 'Death' | 'Notice' | 'Emergency' | 'Data Collect';
 
 export interface DeliveryStats {
   total: number;
@@ -27,6 +27,7 @@ export interface TargetingCriteria {
   gender?: 'Male' | 'Female' | 'All';
   role?: 'Head' | 'Member' | 'All';
   specificFamilyIds?: string[];
+  specificMemberIds?: string[]; // For individual member selection
 }
 
 export interface Announcement {
@@ -36,9 +37,14 @@ export interface Announcement {
   category: AnnouncementCategory;
   date: string;
   imageUrl?: string;
+  videoUrl?: string;
+  formUrl?: string;
   location?: string;
+  phoneNumber?: string;
   target?: TargetingCriteria;
-  stats?: DeliveryStats; // For admin view
+  stats?: DeliveryStats;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface User {
@@ -69,7 +75,7 @@ export interface Payment {
   amount: number;
   date: string;
   title: string;
-  type: 'Monthly Fee' | 'Donation' | 'Event' | 'Fine';
+  type: string; // Changed from union to string for flexibility
   status: 'Paid' | 'Pending';
 }
 

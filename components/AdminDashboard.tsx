@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  PieChart as RePie, Pie, Cell, Legend
+  PieChart as RePie, Pie, Cell, Legend, LineChart, Line
 } from 'recharts';
 import {
   Family, Status, Log, Announcement, Payment, Feedback,
@@ -28,6 +28,7 @@ interface AdminDashboardProps {
   onBulkPaymentCreate: (amount: number, title: string, criteria: TargetingCriteria) => void;
   onCreatePayment: (payment: Payment) => void;
   onMarkPaymentPaid: (id: string) => void;
+  onDeletePayment: (id: string) => void;
   onTabChange: (tab: 'overview' | 'families' | 'payments' | 'announcements' | 'reports' | 'inbox') => void;
 }
 
@@ -36,7 +37,7 @@ const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
   families, logs, announcements, payments, feedbacks,
   onApproveFamily, onApproveMember, onRejectMember, onEditMember,
-  onCreateAnnouncement, onDeleteAnnouncement, onBulkPaymentCreate, onCreatePayment, onMarkPaymentPaid,
+  onCreateAnnouncement, onDeleteAnnouncement, onBulkPaymentCreate, onCreatePayment, onMarkPaymentPaid, onDeletePayment,
   onTabChange
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'families' | 'payments' | 'announcements' | 'reports' | 'inbox'>('overview');
@@ -46,6 +47,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   // Search State
   const [searchTerm, setSearchTerm] = useState('');
+  const [paymentSearch, setPaymentSearch] = useState('');
 
   // Bulk Wizard States
   const [isPayModalOpen, setPayModalOpen] = useState(false);
@@ -82,6 +84,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     desc: '',
     cat: 'Program' as AnnouncementCategory,
     imageUrl: '',
+    videoUrl: '',
+    formUrl: '',
+    location: '',
+    phoneNumber: '',
     wards: [] as string[],
     gender: 'All' as 'All' | 'Male' | 'Female',
     minAge: '' as string,
@@ -91,6 +97,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Edit Member Modal State
   const [isEditMemberModalOpen, setEditMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
+
+  // Analytics Time Range
+  const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month' | 'year'>('week');
+
+  // Family/Member Selection State
+  const [expandedFamilies, setExpandedFamilies] = useState<string[]>([]);
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
 
   const selectedFamily = useMemo(() =>
     families.find(f => f.id === selectedFamilyId),
@@ -137,8 +150,109 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       { name: '60+', value: families.reduce((acc, f) => acc + f.members.filter(m => m.age > 60).length, 0) },
     ];
 
-    return { totalFamilies, pendingFamilies, totalMembers, pendingMembers, genderDist, ageDist };
-  }, [families]);
+    // Payment Analytics
+    const today = new Date().toISOString().split('T')[0];
+    const paidToday = payments.filter(p => p.status === 'Paid' && p.date === today);
+    const requestedToday = payments.filter(p => p.date === today);
+
+    const todayStats = {
+      paidCount: paidToday.length,
+      paidAmount: paidToday.reduce((sum, p) => sum + p.amount, 0),
+      requestedCount: requestedToday.length,
+      requestedAmount: requestedToday.reduce((sum, p) => sum + p.amount, 0)
+    };
+
+    const totalPaid = payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + p.amount, 0);
+    const totalPending = payments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + p.amount, 0);
+    const collectionRate = payments.length > 0 ? Math.round((totalPaid / (totalPaid + totalPending)) * 100) : 0;
+
+    return { totalFamilies, pendingFamilies, totalMembers, pendingMembers, genderDist, ageDist, todayStats, totalPaid, totalPending, collectionRate };
+  }, [families, payments]);
+
+  // Payment Trend Graph Data
+  const paymentTrendData = useMemo(() => {
+    const getDateRange = () => {
+      const now = new Date();
+      const data: { label: string; paid: number; requested: number }[] = [];
+
+      if (timeRange === 'today') {
+        // Hourly for last 24 hours
+        for (let i = 23; i >= 0; i--) {
+          const hour = new Date(now);
+          hour.setHours(now.getHours() - i, 0, 0, 0);
+          const label = hour.getHours() + 'h';
+          data.push({ label, paid: 0, requested: 0 });
+        }
+      } else if (timeRange === 'week') {
+        // Daily for last 7 days
+        for (let i = 6; i >= 0; i--) {
+          const day = new Date(now);
+          day.setDate(now.getDate() - i);
+          const label = day.toLocaleDateString('en-US', { weekday: 'short' });
+          data.push({ label, paid: 0, requested: 0 });
+        }
+      } else if (timeRange === 'month') {
+        // Daily for last 30 days  
+        for (let i = 29; i >= 0; i--) {
+          const day = new Date(now);
+          day.setDate(now.getDate() - i);
+          const label = day.getDate().toString();
+          data.push({ label, paid: 0, requested: 0 });
+        }
+      } else {
+        // Monthly for last 12 months
+        for (let i = 11; i >= 0; i--) {
+          const month = new Date(now);
+          month.setMonth(now.getMonth() - i);
+          const label = month.toLocaleDateString('en-US', { month: 'short' });
+          data.push({ label, paid: 0, requested: 0 });
+        }
+      }
+
+      return data;
+    };
+
+    const data = getDateRange();
+
+    // Populate with actual payment data
+    payments.forEach(payment => {
+      const paymentDate = new Date(payment.date);
+      const now = new Date();
+
+      let index = -1;
+
+      if (timeRange === 'today') {
+        const hoursDiff = Math.floor((now.getTime() - paymentDate.getTime()) / (1000 * 60 * 60));
+        if (hoursDiff >= 0 && hoursDiff < 24) {
+          index = 23 - hoursDiff;
+        }
+      } else if (timeRange === 'week') {
+        const daysDiff = Math.floor((now.getTime() - paymentDate.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysDiff >= 0 && daysDiff < 7) {
+          index = 6 - daysDiff;
+        }
+      } else if (timeRange === 'month') {
+        const daysDiff = Math.floor((now.getTime() - paymentDate.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysDiff >= 0 && daysDiff < 30) {
+          index = 29 - daysDiff;
+        }
+      } else {
+        const monthsDiff = (now.getFullYear() - paymentDate.getFullYear()) * 12 + (now.getMonth() - paymentDate.getMonth());
+        if (monthsDiff >= 0 && monthsDiff < 12) {
+          index = 11 - monthsDiff;
+        }
+      }
+
+      if (index >= 0 && index < data.length) {
+        data[index].requested += payment.amount;
+        if (payment.status === 'Paid') {
+          data[index].paid += payment.amount;
+        }
+      }
+    });
+
+    return data;
+  }, [payments, timeRange]);
 
   // Handlers
   const handleBulkPaySubmit = (e: React.FormEvent) => {
@@ -148,7 +262,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       gender: targetMode === 'filter' ? paymentForm.gender : undefined,
       minAge: targetMode === 'filter' && paymentForm.minAge ? parseInt(paymentForm.minAge) : undefined,
       maxAge: targetMode === 'filter' && paymentForm.maxAge ? parseInt(paymentForm.maxAge) : undefined,
-      specificFamilyIds: targetMode === 'select' ? selectedFamilyIds : undefined
+      specificMemberIds: targetMode === 'select' ? selectedMemberIds : undefined
     });
     setPayModalOpen(false);
     resetForms();
@@ -184,12 +298,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       category: announceForm.cat,
       date: new Date().toISOString().split('T')[0],
       imageUrl: announceForm.imageUrl,
+      videoUrl: announceForm.videoUrl,
+      formUrl: announceForm.formUrl,
+      location: announceForm.location,
+      phoneNumber: announceForm.phoneNumber,
       target: {
         wards: targetMode === 'filter' && announceForm.wards.length > 0 ? announceForm.wards : undefined,
         gender: targetMode === 'filter' ? announceForm.gender : undefined,
         minAge: targetMode === 'filter' && announceForm.minAge ? parseInt(announceForm.minAge) : undefined,
         maxAge: targetMode === 'filter' && announceForm.maxAge ? parseInt(announceForm.maxAge) : undefined,
-        specificFamilyIds: targetMode === 'select' ? selectedFamilyIds : undefined
+        specificMemberIds: targetMode === 'select' ? selectedMemberIds : undefined
       },
       stats: { total: 0, sent: 0, delivered: 0, read: 0 }
     });
@@ -199,7 +317,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const resetForms = () => {
     setPaymentForm({ amount: 100, title: '', wards: [], gender: 'All', minAge: '', maxAge: '' });
-    setAnnounceForm({ title: '', desc: '', cat: 'Program', imageUrl: '', wards: [], gender: 'All', minAge: '', maxAge: '' });
+    setAnnounceForm({ title: '', desc: '', cat: 'Program', imageUrl: '', videoUrl: '', formUrl: '', location: '', phoneNumber: '', wards: [], gender: 'All', minAge: '', maxAge: '' });
     setSelectedFamilyIds([]);
     setTargetMode('filter');
     setSelectionSearch('');
@@ -240,6 +358,118 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </div>
 
+      {/* Today's Payment Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 rounded-xl shadow-lg text-white">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <p className="text-emerald-100 text-xs font-medium uppercase">Collected Today</p>
+              <p className="text-3xl font-bold mt-1">₹{stats.todayStats.paidAmount}</p>
+              <p className="text-emerald-100 text-sm mt-1">{stats.todayStats.paidCount} payments</p>
+            </div>
+            <div className="bg-white/20 p-2 rounded-lg">
+              <DollarSign className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-5 rounded-xl shadow-lg text-white">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <p className="text-amber-100 text-xs font-medium uppercase">Requested Today</p>
+              <p className="text-3xl font-bold mt-1">₹{stats.todayStats.requestedAmount}</p>
+              <p className="text-amber-100 text-sm mt-1">{stats.todayStats.requestedCount} requests</p>
+            </div>
+            <div className="bg-white/20 p-2 rounded-lg">
+              <FileText className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-lg text-white">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <p className="text-blue-100 text-xs font-medium uppercase">Collection Rate</p>
+              <p className="text-3xl font-bold mt-1">{stats.collectionRate}%</p>
+              <p className="text-blue-100 text-sm mt-1">₹{stats.totalPending} pending</p>
+            </div>
+            <div className="bg-white/20 p-2 rounded-lg">
+              <PieChart className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Trend Graph */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-bold text-gray-800">Payment Trends</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setTimeRange('today')}
+              className={`px-3 py-1 text-xs rounded-lg font-medium transition-colors ${timeRange === 'today'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+            >
+              Today
+            </button>
+            <button
+              onClick={() => setTimeRange('week')}
+              className={`px-3 py-1 text-xs rounded-lg font-medium transition-colors ${timeRange === 'week'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+            >
+              Week
+            </button>
+            <button
+              onClick={() => setTimeRange('month')}
+              className={`px-3 py-1 text-xs rounded-lg font-medium transition-colors ${timeRange === 'month'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+            >
+              Month
+            </button>
+            <button
+              onClick={() => setTimeRange('year')}
+              className={`px-3 py-1 text-xs rounded-lg font-medium transition-colors ${timeRange === 'year'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+            >
+              Year
+            </button>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={paymentTrendData}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="label" axisLine={false} tickLine={false} />
+            <YAxis axisLine={false} tickLine={false} />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="paid"
+              stroke="#10b981"
+              strokeWidth={2}
+              name="Collected (₹)"
+              dot={{ fill: '#10b981', r: 4 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="requested"
+              stroke="#f59e0b"
+              strokeWidth={2}
+              name="Requested (₹)"
+              dot={{ fill: '#f59e0b', r: 4 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-80">
           <h3 className="font-bold text-gray-700 mb-4">Demographics by Age</h3>
@@ -276,6 +506,53 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Pending Actions Widget */}
+      {(stats.pendingFamilies > 0 || stats.pendingMembers > 0 || families.some(f => f.members.some(m => m.deleteRequested))) && (
+        <div className="bg-amber-50 border-l-4 border-amber-500 rounded-xl overflow-hidden">
+          <div className="p-4 bg-amber-100/50">
+            <h3 className="font-bold text-amber-900 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              Pending Actions
+            </h3>
+          </div>
+          <div className="p-4 space-y-2">
+            {stats.pendingFamilies > 0 && (
+              <button
+                onClick={() => setActiveTab('families')}
+                className="w-full text-left px-4 py-3 bg-white rounded-lg hover:bg-amber-100 transition-colors flex justify-between items-center group"
+              >
+                <span className="text-sm font-medium text-gray-700 group-hover:text-amber-900">Family Approvals</span>
+                <span className="px-3 py-1 bg-amber-200 text-amber-900 rounded-full text-xs font-bold">
+                  {stats.pendingFamilies}
+                </span>
+              </button>
+            )}
+            {stats.pendingMembers > 0 && (
+              <button
+                onClick={() => setActiveTab('families')}
+                className="w-full text-left px-4 py-3 bg-white rounded-lg hover:bg-amber-100 transition-colors flex justify-between items-center group"
+              >
+                <span className="text-sm font-medium text-gray-700 group-hover:text-amber-900">Member Approvals</span>
+                <span className="px-3 py-1 bg-amber-200 text-amber-900 rounded-full text-xs font-bold">
+                  {stats.pendingMembers}
+                </span>
+              </button>
+            )}
+            {families.some(f => f.members.some(m => m.deleteRequested)) && (
+              <button
+                onClick={() => setActiveTab('families')}
+                className="w-full text-left px-4 py-3 bg-white rounded-lg hover:bg-red-100 transition-colors flex justify-between items-center group"
+              >
+                <span className="text-sm font-medium text-gray-700 group-hover:text-red-900">Delete Requests</span>
+                <span className="px-3 py-1 bg-red-200 text-red-900 rounded-full text-xs font-bold">
+                  {families.reduce((acc, f) => acc + f.members.filter(m => m.deleteRequested).length, 0)}
+                </span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -584,6 +861,39 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       )}
 
+      {/* Delete Requests Section */}
+      {families.some(f => f.members.some(m => m.deleteRequested)) && (
+        <div className="bg-red-50 border border-red-200 p-4 rounded-xl mb-4">
+          <h3 className="font-bold text-red-800 mb-2 flex items-center gap-2">
+            <Trash2 className="w-5 h-5" /> Delete Requests
+          </h3>
+          <div className="space-y-2">
+            {families.map(f =>
+              f.members.filter(m => m.deleteRequested).map(m => (
+                <div key={m.id} className="bg-white p-3 rounded-lg border border-red-100 flex justify-between items-center">
+                  <div>
+                    <span className="font-bold">{m.name}</span>
+                    <span className="text-gray-500 text-sm mx-2">|</span>
+                    <span className="text-sm text-gray-600">{f.headName}'s family</span>
+                    {m.relation === 'Head' && (
+                      <span className="ml-2 px-2 py-0.5 bg-red-600 text-white text-xs rounded font-medium">
+                        ⚠️ HEAD - Will delete entire family
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => onRejectMember(f.id, m.id)}
+                    className="px-3 py-1 bg-red-600 text-white text-xs rounded font-medium hover:bg-red-700"
+                  >
+                    Approve Delete
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
@@ -658,33 +968,64 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* Pending Approvals Section */}
         {pendingPayments.length > 0 && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden">
-            <div className="px-6 py-3 border-b border-amber-200 bg-amber-100/50 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-amber-600" />
-              <h3 className="font-bold text-amber-900">Pending Approvals</h3>
+            <div className="px-6 py-3 border-b border-amber-200 bg-amber-100/50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-amber-600" />
+                <h3 className="font-bold text-amber-900">Pending Approvals</h3>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search payments..."
+                  value={paymentSearch}
+                  onChange={(e) => setPaymentSearch(e.target.value)}
+                  className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
+                />
+              </div>
             </div>
             <div className="divide-y divide-amber-100">
-              {pendingPayments.slice(0, 5).map(p => {
-                const f = families.find(fam => fam.id === p.familyId);
-                return (
-                  <div key={p.id} className="px-6 py-4 flex justify-between items-center hover:bg-amber-100/30">
-                    <div>
-                      <p className="font-bold text-gray-800">{p.title || p.type}</p>
-                      <p className="text-sm text-gray-600">
-                        {p.memberName ? `${p.memberName} • ` : ''}{f?.headName} • {f?.ward}
-                      </p>
+              {pendingPayments
+                .filter(p => {
+                  if (!paymentSearch) return true;
+                  const search = paymentSearch.toLowerCase();
+                  const family = families.find(f => f.id === p.familyId);
+                  return (
+                    p.memberName?.toLowerCase().includes(search) ||
+                    family?.headName.toLowerCase().includes(search) ||
+                    p.title.toLowerCase().includes(search) ||
+                    p.amount.toString().includes(search)
+                  );
+                })
+                .slice(0, 5).map(p => {
+                  const f = families.find(fam => fam.id === p.familyId);
+                  return (
+                    <div key={p.id} className="px-6 py-4 flex justify-between items-center hover:bg-amber-100/30">
+                      <div>
+                        <p className="font-bold text-gray-800">{p.title || p.type}</p>
+                        <p className="text-sm text-gray-600">
+                          {p.memberName ? `${p.memberName} • ` : ''}{f?.headName} • {f?.ward}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="font-bold text-gray-900">₹{p.amount}</span>
+                        <button
+                          onClick={() => onMarkPaymentPaid(p.id)}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white rounded text-sm font-medium hover:bg-emerald-700"
+                        >
+                          <Check className="w-4 h-4" /> Approve
+                        </button>
+                        <button
+                          onClick={() => onDeletePayment(p.id)}
+                          className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                          title="Delete payment"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <span className="font-bold text-gray-900">₹{p.amount}</span>
-                      <button
-                        onClick={() => onMarkPaymentPaid(p.id)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white rounded text-sm font-medium hover:bg-emerald-700"
-                      >
-                        <Check className="w-4 h-4" /> Approve
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
               {pendingPayments.length > 5 && (
                 <div className="px-6 py-2 text-center text-sm text-amber-800 font-medium cursor-pointer hover:bg-amber-100/50">
                   View {pendingPayments.length - 5} more pending...
@@ -894,29 +1235,95 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               onChange={(e) => setSelectionSearch(e.target.value)}
             />
           </div>
-          <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-lg bg-white">
-            {familiesForSelection.map(f => (
-              <div key={f.id} className="flex items-center p-2 hover:bg-gray-50 border-b last:border-0 border-gray-50">
-                <input
-                  type="checkbox"
-                  checked={selectedFamilyIds.includes(f.id)}
-                  onChange={() => {
-                    setSelectedFamilyIds(prev => prev.includes(f.id) ? prev.filter(id => id !== f.id) : [...prev, f.id])
-                  }}
-                  className="w-4 h-4 text-emerald-600 rounded mr-3"
-                />
-                <div className="text-sm">
-                  <div className="font-medium">{f.headName}</div>
-                  <div className="text-xs text-gray-500">{f.ward} • {f.code}</div>
+          <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg bg-white">
+            {familiesForSelection.map(f => {
+              const isExpanded = expandedFamilies.includes(f.id);
+              const headMember = f.members.find(m => m.relation === 'Head');
+              const familyMemberIds = f.members.map(m => m.id);
+              const isFamilySelected = headMember && selectedMemberIds.includes(headMember.id);
+
+              return (
+                <div key={f.id} className="border-b last:border-0 border-gray-100">
+                  {/* Family Header */}
+                  <div className="flex items-center p-2 hover:bg-gray-50">
+                    <button
+                      onClick={() => setExpandedFamilies(prev =>
+                        prev.includes(f.id) ? prev.filter(id => id !== f.id) : [...prev, f.id]
+                      )}
+                      className="p-1 hover:bg-gray-200 rounded mr-2"
+                    >
+                      {isExpanded ? '▼' : '▶'}
+                    </button>
+                    <input
+                      type="checkbox"
+                      checked={isFamilySelected}
+                      onChange={() => {
+                        if (headMember) {
+                          setSelectedMemberIds(prev =>
+                            prev.includes(headMember.id)
+                              ? prev.filter(id => id !== headMember.id)
+                              : [...prev, headMember.id]
+                          );
+                        }
+                      }}
+                      className="w-4 h-4 text-emerald-600 rounded mr-3"
+                    />
+                    <div className="flex-1 text-sm">
+                      <div className="font-medium flex items-center gap-2">
+                        {f.headName}
+                        <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded font-medium">
+                          {f.members.length} members
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500">{f.ward} • {f.code}</div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Member List */}
+                  {isExpanded && (
+                    <div className="pl-8 pr-2 pb-2 bg-gray-50 space-y-1">
+                      {f.members.map(member => (
+                        <label
+                          key={member.id}
+                          className="flex items-center p-2 hover:bg-white rounded cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedMemberIds.includes(member.id)}
+                            onChange={() => {
+                              setSelectedMemberIds(prev =>
+                                prev.includes(member.id)
+                                  ? prev.filter(id => id !== member.id)
+                                  : [...prev, member.id]
+                              );
+                            }}
+                            className="w-4 h-4 text-emerald-600 rounded mr-3"
+                          />
+                          <div className="flex-1 flex items-center justify-between">
+                            <div className="text-sm">
+                              <span className="font-medium text-gray-900">{member.name}</span>
+                              <span className="text-gray-400 mx-2">•</span>
+                              <span className="text-xs text-gray-500">{member.relation}, {member.age}y</span>
+                            </div>
+                            {member.relation === 'Head' && (
+                              <span className="text-xs px-2 py-0.5 bg-emerald-600 text-white rounded font-bold">
+                                HEAD
+                              </span>
+                            )}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {familiesForSelection.length === 0 && (
               <div className="p-4 text-center text-xs text-gray-400">No families found</div>
             )}
           </div>
           <div className="text-xs text-emerald-600 font-medium text-right">
-            {selectedFamilyIds.length} Families Selected
+            {selectedMemberIds.length} {selectedMemberIds.length === 1 ? 'Member' : 'Members'} Selected
           </div>
         </div>
       )}
@@ -994,45 +1401,73 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* Announcement Wizard Modal */}
       {isAnnounceModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden animate-slideUp">
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-slideUp flex flex-col">
             <div className="p-6 border-b border-gray-100">
               <h3 className="text-lg font-bold">New Announcement</h3>
               <p className="text-sm text-gray-500">Send to App Feed & WhatsApp</p>
             </div>
-            <form onSubmit={handleAnnounceSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Title</label>
-                <input type="text" required className="w-full border rounded-lg p-2" value={announceForm.title} onChange={e => setAnnounceForm({ ...announceForm, title: e.target.value })} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleAnnounceSubmit} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Category</label>
-                  <select className="w-full border rounded-lg p-2" value={announceForm.cat} onChange={e => setAnnounceForm({ ...announceForm, cat: e.target.value as any })}>
-                    <option>Program</option>
-                    <option>Death</option>
-                    <option>Notice</option>
-                  </select>
+                  <label className="block text-sm font-medium mb-1">Title</label>
+                  <input type="text" required className="w-full border rounded-lg p-2" value={announceForm.title} onChange={e => setAnnounceForm({ ...announceForm, title: e.target.value })} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Category</label>
+                    <select className="w-full border rounded-lg p-2" value={announceForm.cat} onChange={e => setAnnounceForm({ ...announceForm, cat: e.target.value as any })}>
+                      <option>Program</option>
+                      <option>Death</option>
+                      <option>Notice</option>
+                      <option>Emergency</option>
+                      <option>Data Collect</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Image URL (Optional)</label>
+                    <input type="text" className="w-full border rounded-lg p-2" placeholder="https://..." value={announceForm.imageUrl} onChange={e => setAnnounceForm({ ...announceForm, imageUrl: e.target.value })} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">YouTube Video URL (Optional)</label>
+                    <input type="text" className="w-full border rounded-lg p-2" placeholder="https://youtube.com/watch?v=..." value={announceForm.videoUrl} onChange={e => setAnnounceForm({ ...announceForm, videoUrl: e.target.value })} />
+                  </div>
+                  {announceForm.cat === 'Data Collect' && (
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Google Forms URL</label>
+                      <input type="text" className="w-full border rounded-lg p-2" placeholder="https://forms.gle/..." value={announceForm.formUrl} onChange={e => setAnnounceForm({ ...announceForm, formUrl: e.target.value })} required />
+                    </div>
+                  )}
+                  {announceForm.cat === 'Emergency' && (
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Emergency Contact</label>
+                      <input type="tel" className="w-full border rounded-lg p-2" placeholder="+91 9999999999" value={announceForm.phoneNumber} onChange={e => setAnnounceForm({ ...announceForm, phoneNumber: e.target.value })} />
+                    </div>
+                  )}
+                  {announceForm.cat !== 'Data Collect' && announceForm.cat !== 'Emergency' && (
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Location (Optional)</label>
+                      <input type="text" className="w-full border rounded-lg p-2" placeholder="Mahall Auditorium" value={announceForm.location} onChange={e => setAnnounceForm({ ...announceForm, location: e.target.value })} />
+                    </div>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Image URL (Optional)</label>
-                  <input type="text" className="w-full border rounded-lg p-2" placeholder="https://..." value={announceForm.imageUrl} onChange={e => setAnnounceForm({ ...announceForm, imageUrl: e.target.value })} />
+                  <label className="block text-sm font-medium mb-1">Description</label>
+                  <textarea required className="w-full border rounded-lg p-2 h-20 resize-none" value={announceForm.desc} onChange={e => setAnnounceForm({ ...announceForm, desc: e.target.value })}></textarea>
+                </div>
+
+                <TargetSelector />
+
+                <div className="border-t border-gray-100 pt-4">
+                  <label className="flex items-center gap-2 mb-2 font-medium text-sm text-gray-700">
+                    <input type="checkbox" defaultChecked className="w-4 h-4 text-emerald-600 rounded" />
+                    Send via WhatsApp
+                  </label>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea required className="w-full border rounded-lg p-2 h-20 resize-none" value={announceForm.desc} onChange={e => setAnnounceForm({ ...announceForm, desc: e.target.value })}></textarea>
-              </div>
 
-              <TargetSelector />
-
-              <div className="border-t border-gray-100 pt-4">
-                <label className="flex items-center gap-2 mb-2 font-medium text-sm text-gray-700">
-                  <input type="checkbox" defaultChecked className="w-4 h-4 text-emerald-600 rounded" />
-                  Send via WhatsApp
-                </label>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 p-6 border-t border-gray-100 bg-gray-50">
                 <button type="button" onClick={() => setAnnounceModalOpen(false)} className="px-4 py-2 text-gray-500 hover:text-gray-700">Cancel</button>
                 <button type="submit" className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 flex items-center gap-2">
                   <Send className="w-4 h-4" /> Broadcast

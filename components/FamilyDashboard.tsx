@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   User, Plus, Trash2, Home, CreditCard, MessageSquare,
-  Newspaper, Users, Send, Clock, AlertTriangle, CheckCircle
+  Newspaper, Users, Send, Clock, AlertTriangle, CheckCircle, MapPin, Filter, PlayCircle, FileText, Phone, Edit2
 } from 'lucide-react';
 import { Family, FamilyMember, Status, Announcement, Payment, Feedback } from '../types';
 
@@ -9,18 +9,24 @@ interface FamilyDashboardProps {
   family: Family;
   announcements: Announcement[];
   payments: Payment[];
+  currentUserName?: string; // Name of logged-in user
+  isHead?: boolean; // Whether logged-in user is family head
   onAddMember: (member: Omit<FamilyMember, 'id' | 'status' | 'familyId'>) => void;
+  onUpdateMember: (memberId: string, updates: Partial<FamilyMember>) => void;
   onDeleteRequest: (memberId: string) => void;
   onSendFeedback: (message: string) => void;
   onTabChange: (tab: 'home' | 'family' | 'payments' | 'support') => void;
 }
 
 const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
-  family, announcements, payments, onAddMember, onDeleteRequest, onSendFeedback, onTabChange
+  family, announcements, payments, currentUserName, isHead = false, onAddMember, onUpdateMember, onDeleteRequest, onSendFeedback, onTabChange
 }) => {
   const [activeTab, setActiveTab] = useState<'home' | 'family' | 'payments' | 'support'>('home');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('All');
+  const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
   const [newMember, setNewMember] = useState({
     name: '',
     relation: 'Son' as FamilyMember['relation'],
@@ -59,6 +65,22 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
     }
   };
 
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMember) return;
+
+    onUpdateMember(editingMember.id, {
+      name: editingMember.name,
+      age: editingMember.age,
+      phone: editingMember.phone,
+      relation: editingMember.relation,
+      gender: editingMember.gender
+    });
+
+    setIsEditModalOpen(false);
+    setEditingMember(null);
+  };
+
   const getStatusBadge = (status: Status) => {
     switch (status) {
       case Status.APPROVED: return <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Active</span>;
@@ -67,13 +89,132 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
     }
   };
 
+  const getTimeAgo = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHours = Math.floor(diffMin / 60);
+      const diffDays = Math.floor(diffHours / 24);
+      const diffWeeks = Math.floor(diffDays / 7);
+      const diffMonths = Math.floor(diffDays / 30);
+
+      if (diffSec < 60) return `${diffSec}s ago`;
+      if (diffMin < 60) return `${diffMin}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      if (diffWeeks < 4) return `${diffWeeks}w ago`;
+      if (diffMonths < 12) return `${diffMonths}mo ago`;
+      return date.toLocaleDateString();
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const filteredAnnouncements = useMemo(() => {
+    // First filter by category
+    let filtered = announcements.filter(a =>
+      categoryFilter === 'All' || a.category === categoryFilter
+    );
+
+    // Then filter by targeting criteria
+    filtered = filtered.filter(announcement => {
+      const target = announcement.target;
+
+      // If no targeting criteria, show to everyone
+      if (!target) return true;
+
+      // Check if all targeting fields are empty/undefined
+      const hasNoTargeting = !target.wards && !target.gender &&
+        !target.minAge && !target.maxAge &&
+        !target.specificFamilyIds && !target.specificMemberIds;
+
+      if (hasNoTargeting) return true;
+
+      // Get current user's member info (could be any member in the family)
+      // For now, we'll use the head member's info as proxy
+      // TODO: Pass actual logged-in member info as prop
+      const currentMember = family.members.find(m => m.relation === 'Head') || family.members[0];
+
+      // Check ward match
+      if (target.wards && target.wards.length > 0) {
+        if (!target.wards.includes(family.ward)) {
+          return false;
+        }
+      }
+
+      // Check gender match
+      if (target.gender && target.gender !== 'All') {
+        if (currentMember.gender !== target.gender) {
+          return false;
+        }
+      }
+
+      // Check age range
+      if (target.minAge && currentMember.age < target.minAge) {
+        return false;
+      }
+      if (target.maxAge && currentMember.age > target.maxAge) {
+        return false;
+      }
+
+      // Check specific family IDs
+      if (target.specificFamilyIds && target.specificFamilyIds.length > 0) {
+        if (!target.specificFamilyIds.includes(family.id)) {
+          return false;
+        }
+      }
+
+      // Check specific member IDs
+      if (target.specificMemberIds && target.specificMemberIds.length > 0) {
+        // 1. If currently logged in as Head, show all announcements for the family
+        if (isHead) {
+          // Check if any member of this family is targeted
+          const familyMemberIds = family.members.map(m => m.id);
+          const hasMatch = target.specificMemberIds.some(id => familyMemberIds.includes(id));
+          return hasMatch;
+        }
+
+        // 2. If logged in as specific member, check if THEY are targeted
+        // Find current member by name (since we don't have direct ID mapping in auth)
+        const currentLoggedInMember = family.members.find(m => m.name === currentUserName);
+
+        if (currentLoggedInMember) {
+          // Show only if this specific member is targeted
+          return target.specificMemberIds.includes(currentLoggedInMember.id);
+        }
+
+        // Fallback: If we can't identify the member, hide targeted announcements to be safe
+        return false;
+      }
+
+      return true;
+    });
+
+    return filtered;
+  }, [announcements, categoryFilter, family, isHead, currentUserName]);
+
+  const getYouTubeId = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*$/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
   const renderHome = () => (
     <div className="space-y-6 animate-fadeIn pb-24">
       {/* Welcome & Status Banner */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
         <div className="relative z-10">
-          <h2 className="text-2xl font-bold mb-1">Welcome, {family.headName}</h2>
-          <p className="text-emerald-100 text-sm mb-4">{family.address} • {family.ward}</p>
+          <h2 className="text-2xl font-bold mb-1">Welcome, {currentUserName || family.headName}</h2>
+          <p className="text-emerald-100 text-sm mb-4">
+            {!isHead && currentUserName && (
+              <span className="mr-2">Family of {family.headName} • </span>
+            )}
+            {family.address} • {family.ward}
+          </p>
 
           <div className="flex gap-3">
             <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-semibold uppercase">
@@ -93,41 +234,150 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
 
       {/* Announcements Feed */}
       <div>
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <Newspaper className="w-5 h-5 text-emerald-600" /> Community News
-        </h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <Newspaper className="w-5 h-5 text-emerald-600" /> Community News
+          </h3>
+          <div className="relative">
+            <Filter className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="pl-8 pr-4 py-1.5 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-emerald-500 outline-none"
+            >
+              <option>All</option>
+              <option>Program</option>
+              <option>Death</option>
+              <option>Notice</option>
+              <option>Emergency</option>
+              <option>Data Collect</option>
+            </select>
+          </div>
+        </div>
 
         <div className="space-y-4">
-          {announcements.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No new announcements.</p>
+          {filteredAnnouncements.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">No announcements in this category.</p>
           ) : (
-            announcements.map(item => (
-              <div key={item.id} className={`bg-white rounded-xl overflow-hidden shadow-sm border-l-4 ${item.category === 'Death' ? 'border-gray-800' :
-                item.category === 'Program' ? 'border-emerald-500' : 'border-blue-400'
-                }`}>
-                {item.imageUrl && (
-                  <img src={item.imageUrl} alt={item.title} className="w-full h-40 object-cover" />
-                )}
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded ${item.category === 'Death' ? 'bg-gray-100 text-gray-800' :
-                      item.category === 'Program' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
-                      }`}>
-                      {item.category}
-                    </span>
-                    <span className="text-xs text-gray-400">{item.date}</span>
-                  </div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h4>
-                  <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
-                  {item.location && (
-                    <div className="mt-3 flex items-center gap-1 text-xs text-gray-500 font-medium">
-                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
-                      {item.location}
+            filteredAnnouncements.map(item => {
+              const youtubeId = getYouTubeId(item.videoUrl || '');
+              const showImage = item.imageUrl && (!item.videoUrl || item.category === 'Data Collect');
+
+              return (
+                <div key={item.id} className={`bg-white rounded-xl overflow-hidden shadow-sm border-l-4 ${item.category === 'Death' ? 'border-gray-800' :
+                  item.category === 'Emergency' ? 'border-red-500' :
+                    item.category === 'Program' ? 'border-emerald-500' :
+                      item.category === 'Data Collect' ? 'border-blue-500' :
+                        'border-blue-400'
+                  }`}>
+                  {/* YouTube Embed or Image */}
+                  {youtubeId && !showImage ? (
+                    <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                      <iframe
+                        className="absolute top-0 left-0 w-full h-full"
+                        src={`https://www.youtube.com/embed/${youtubeId}`}
+                        title={item.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
                     </div>
-                  )}
+                  ) : showImage ? (
+                    <img src={item.imageUrl} alt={item.title} className="w-full h-40 object-cover" />
+                  ) : null}
+
+                  <div className="p-5">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded ${item.category === 'Death' ? 'bg-gray-100 text-gray-800' :
+                        item.category === 'Emergency' ? 'bg-red-100 text-red-700' :
+                          item.category === 'Program' ? 'bg-emerald-50 text-emerald-600' :
+                            item.category === 'Data Collect' ? 'bg-blue-50 text-blue-700' :
+                              'bg-blue-50 text-blue-600'
+                        }`}>
+                        {item.category}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {getTimeAgo(item.createdAt || item.updatedAt || item.date)}
+                      </span>
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h4>
+
+                    {/* Show which members this announcement is specifically for */}
+                    {item.target?.specificMemberIds && item.target.specificMemberIds.length > 0 && (() => {
+                      const targetedMembers = family.members.filter(m =>
+                        item.target?.specificMemberIds?.includes(m.id)
+                      );
+                      if (targetedMembers.length > 0) {
+                        return (
+                          <div className="mb-2 flex flex-wrap items-center gap-1">
+                            <span className="text-xs text-purple-600 font-semibold">For:</span>
+                            {targetedMembers.map(member => (
+                              <span
+                                key={member.id}
+                                className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full font-medium"
+                              >
+                                {member.name}
+                              </span>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+
+                    <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                    {item.location && (
+                      <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        {item.location}
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    {(item.formUrl || item.phoneNumber || (item.videoUrl && !youtubeId)) && (
+                      <div className="flex gap-2 mt-4">
+                        {/* Open Form Button for Data Collect */}
+                        {item.category === 'Data Collect' && item.formUrl && (
+                          <a
+                            href={item.formUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                          >
+                            <FileText className="w-4 h-4" />
+                            Open Form
+                          </a>
+                        )}
+
+                        {/* Call Button for Emergency */}
+                        {item.category === 'Emergency' && item.phoneNumber && (
+                          <a
+                            href={`tel:${item.phoneNumber}`}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                          >
+                            <Phone className="w-4 h-4" />
+                            Call Now
+                          </a>
+                        )}
+
+                        {/* Watch Video Button (for non-YouTube videos) */}
+                        {item.videoUrl && !youtubeId && (
+                          <a
+                            href={item.videoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+                          >
+                            <PlayCircle className="w-4 h-4" />
+                            Watch Video
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -141,12 +391,14 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
           <h2 className="text-xl font-bold text-gray-900">Family Members</h2>
           <p className="text-gray-500 text-sm">Manage your household details</p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-emerald-600 text-white p-3 rounded-full shadow-lg hover:bg-emerald-700 transition-colors"
-        >
-          <Plus className="w-6 h-6" />
-        </button>
+        {isHead && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-emerald-600 text-white p-3 rounded-full shadow-lg hover:bg-emerald-700 transition-colors"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+        )}
       </div>
 
       <div className="space-y-3">
@@ -179,17 +431,30 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
             </div>
 
             <div className="flex gap-2">
-              {member.relation !== 'Head' && (
-                <button
-                  onClick={() => onDeleteRequest(member.id)}
-                  disabled={member.deleteRequested}
-                  className={`p-2 transition-colors ${member.deleteRequested
-                    ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-300 hover:text-red-500'
-                    }`}
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+              {isHead && (
+                <>
+                  <button
+                    onClick={() => {
+                      setEditingMember(member);
+                      setIsEditModalOpen(true);
+                    }}
+                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  {member.relation !== 'Head' && (
+                    <button
+                      onClick={() => onDeleteRequest(member.id)}
+                      disabled={member.deleteRequested}
+                      className={`p-2 transition-colors ${member.deleteRequested
+                        ? 'text-gray-300 cursor-not-allowed'
+                        : 'text-gray-300 hover:text-red-500'
+                        }`}
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -371,6 +636,93 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                 </p>
                 <button type="submit" className="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700">
                   Submit Member
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Member Modal */}
+      {isEditModalOpen && editingMember && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden animate-fadeIn">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <h3 className="font-bold text-lg">Edit Member</h3>
+              <button onClick={() => { setIsEditModalOpen(false); setEditingMember(null); }} className="text-gray-400 hover:text-gray-600">×</button>
+            </div>
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <input
+                  required
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={editingMember.name}
+                  onChange={e => setEditingMember({ ...editingMember, name: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Relation</label>
+                  <select
+                    className="w-full border border-gray-300 rounded-lg p-2 text-sm outline-none"
+                    value={editingMember.relation}
+                    onChange={e => setEditingMember({ ...editingMember, relation: e.target.value as any })}
+                  >
+                    <option>Head</option>
+                    <option>Wife</option>
+                    <option>Son</option>
+                    <option>Daughter</option>
+                    <option>Father</option>
+                    <option>Mother</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                  <input
+                    required
+                    type="number"
+                    className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={editingMember.age}
+                    onChange={e => setEditingMember({ ...editingMember, age: parseInt(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="radio"
+                      name="edit-gender"
+                      checked={editingMember.gender === 'Male'}
+                      onChange={() => setEditingMember({ ...editingMember, gender: 'Male' })}
+                    /> Male
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="radio"
+                      name="edit-gender"
+                      checked={editingMember.gender === 'Female'}
+                      onChange={() => setEditingMember({ ...editingMember, gender: 'Female' })}
+                    /> Female
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                <input
+                  type="tel"
+                  className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={editingMember.phone || ''}
+                  onChange={e => setEditingMember({ ...editingMember, phone: e.target.value })}
+                />
+              </div>
+              <div className="pt-2">
+                <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700">
+                  Save Changes
                 </button>
               </div>
             </form>

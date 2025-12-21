@@ -1,0 +1,20 @@
+[
+  {
+    "userId": "m_1766120285337",
+    "endpoint": "https://fcm.googleapis.com/fcm/send/cEfwjC8dyzM:APA91bGFGQmTDmr0zMV-MCsq3jehcxARCh954zV-gEDBVhoZ2nArfc9yfGRcTHDYzVXlj9jIP30aPn1lGGYvxeeUel9l8AOqwW34qbdvKp_wzW8QGRw5iPpH6JRfJYY1WD-VZ3786Ppe",
+    "keys": {
+      "p256dh": "BHIGsp12YacWE6NfYVKbVKeMwQ82mPT7-5MFpDgWt3-mAV0F1hnCv0APB3_L842Pw4fzEOCxuSkFDZk_QwzEDEU",
+      "auth": "6e2ahevn_ZZWnfBKTEItLw"
+    },
+    "createdAt": "2025-12-19T04:58:15.593Z"
+  },
+  {
+    "userId": "m_1765878515920",
+    "endpoint": "https://fcm.googleapis.com/fcm/send/fjKzIkHCOow:APA91bGpuDat2VTe4DTa-H7JLxt3yHK6uKvyeR3DZKgXu63KBMySX2csTCTVdaCb6GsdwsxsBEUxpc4BJARw7ZIcSbMTBbtwp0c4J6y-yshC7Mtof2n_JbIewumlWBcjYkFVDrzu_LR8",
+    "keys": {
+      "p256dh": "BMWP6x5yRWqfES9uvcbbMBBPWpLuKpmklm0QKfSUKCYgPYsgxpAU2OyVfl4UkZ8IOr_ikm_L6SwY0yHw4bmTftY",
+      "auth": "34hD_3R1Ky6b410SvcENGA"
+    },
+    "createdAt": "2025-12-21T07:11:01.841Z"
+  }
+]

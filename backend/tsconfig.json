@@ -1,11 +1,11 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "./dist/backend",
-    "rootDir": "./backend",
+    "outDir": "./dist",
+    "rootDir": ".",
     "allowJs": true,
     "noEmit": false,
     "allowImportingTsExtensions": false,
@@ -18,7 +18,7 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "backend/**/*"
+    "**/*"
   ],
   "exclude": [
     "node_modules",
