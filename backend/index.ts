@@ -1,7 +1,7 @@
 // Initialize dotenv FIRST - before any imports that might need env vars
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config();
 
 // Now import everything else
 import express, { Request, Response, NextFunction } from 'express';
