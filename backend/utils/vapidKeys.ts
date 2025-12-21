@@ -1,7 +1,7 @@
 import webpush from 'web-push';
 import 'dotenv/config';
 
-export function initializeVapidKeys() {
+export function getVapidKeys() {
     const publicKey = process.env.VAPID_PUBLIC_KEY;
     const privateKey = process.env.VAPID_PRIVATE_KEY;
     const subject = process.env.VAPID_SUBJECT || 'mailto:admin@modernmahall.com';

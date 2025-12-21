@@ -7,7 +7,7 @@ dotenv.config();
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { initializeDatabase } from './db/index.js';
-import { initializeVapidKeys } from './utils/vapidKeys.js';
+// import { initializeVapidKeys } from './utils/vapidKeys.js';
 import { initializeWebPush } from './services/notificationService.js';
 import authRoutes from './api/authRoutes.js';
 import adminRoutes from './api/adminRoutes.js';
@@ -83,8 +83,8 @@ async function startServer() {
         await initializeDatabase();
 
         // Initialize VAPID keys (generate if not exists)
-        console.log('🔑 Initializing VAPID keys...');
-        initializeVapidKeys();
+        // console.log('🔑 Initializing VAPID keys...');
+        // initializeVapidKeys();
 
         // Initialize web-push with the loaded VAPID keys
         console.log('📬 Initializing push notification service...');
