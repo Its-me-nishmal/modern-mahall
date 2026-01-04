@@ -1,9 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Users, CheckCircle, DollarSign, Megaphone, Search, AlertCircle,
   Trash2, Plus, Inbox, Calendar, ArrowLeft, Filter, FileText, Send,
-  Download, PieChart, MoreVertical, Edit2, Smartphone, Check, X
+  Download, PieChart, MoreVertical, Edit2, Smartphone, Check, X,
+  TrendingUp, Clock, Edit, FileBarChart, Users as UsersIcon, MessageSquare, Bell, Eye, User, MapPin, Phone, Mail, Briefcase, Heart, GraduationCap, Home, CreditCard
 } from 'lucide-react';
+import { showToast } from '../utils/toast';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   PieChart as RePie, Pie, Cell, Legend, LineChart, Line
@@ -2050,10 +2052,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
 
-        alert('Report exported successfully!');
+        showToast.success('Report exported successfully!');
       } catch (error) {
         console.error('Export error:', error);
-        alert('Failed to export report. Please try again.');
+        showToast.error('Failed to export report. Please try again.');
       } finally {
         setIsExporting(false);
       }

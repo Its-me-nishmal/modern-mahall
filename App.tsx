@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Auth from './components/Auth';
 import AdminDashboard from './components/AdminDashboard';
 import FamilyDashboard from './components/FamilyDashboard';
@@ -8,6 +9,7 @@ import NotificationManager from './components/NotificationManager';
 import NotificationInbox from './components/NotificationInbox';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorPage from './components/ErrorPage';
+import { showToast } from './utils/toast';
 import { User, Family, Status, UserRole, FamilyMember, Log, Announcement, Payment, Feedback, TargetingCriteria } from './types';
 import { LogOut, Bell, Loader2 } from 'lucide-react';
 
@@ -74,7 +76,7 @@ const App: React.FC = () => {
       setFeedbacks(await feedbacksRes.json());
     } catch (error) {
       console.error("Data Fetching Error:", error);
-      alert("Could not load existing data from backend.");
+      showToast.error("Could not load existing data from backend.");
     } finally {
       setIsLoading(false);
     }
@@ -93,7 +95,7 @@ const App: React.FC = () => {
       await fetchDataOnLogin(user.role, user.familyId, token);
     } catch (error) {
       console.error("Login Error:", error);
-      alert(`Login failed: ${(error as Error).message}`);
+      showToast.error(`Login failed: ${(error as Error).message}`);
       throw error;
     } finally {
       setIsLoading(false);
@@ -123,13 +125,13 @@ const App: React.FC = () => {
         localStorage.setItem('token', responseData.token);
         setIsOnboarding(false);
         await fetchDataOnLogin(responseData.user.role, responseData.user.familyId, responseData.token);
-        alert('Registration successful! Your family profile is pending admin approval.');
+        showToast.success('Registration successful! Your family profile is pending admin approval.');
       } else {
         throw new Error(responseData.message || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert(`Registration failed: ${(error as Error).message}`);
+      showToast.error(`Registration failed: ${(error as Error).message}`);
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +160,7 @@ const App: React.FC = () => {
     try {
       const family = families.find(f => f.id === id);
       if (!family) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
@@ -183,13 +185,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const updatedFamily = await response.json();
         setFamilies(families.map(f => f.id === id ? updatedFamily : f));
-        alert('Family and head member approved successfully!');
+        showToast.success('Family and head member approved successfully!');
       } else {
         throw new Error('Failed to approve family');
       }
     } catch (error) {
       console.error('Error approving family:', error);
-      alert('Failed to approve family');
+      showToast.error('Failed to approve family');
     }
   };
 
@@ -197,7 +199,7 @@ const App: React.FC = () => {
     try {
       const family = families.find(f => f.id === familyId);
       if (!family) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
@@ -217,13 +219,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const updatedFamily = await response.json();
         setFamilies(families.map(f => f.id === familyId ? updatedFamily : f));
-        alert('Member approved successfully!');
+        showToast.success('Member approved successfully!');
       } else {
         throw new Error('Failed to approve member');
       }
     } catch (error) {
       console.error('Error approving member:', error);
-      alert('Failed to approve member');
+      showToast.error('Failed to approve member');
     }
   };
 
@@ -231,7 +233,7 @@ const App: React.FC = () => {
     try {
       const family = families.find(f => f.id === familyId);
       if (!family) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
@@ -249,13 +251,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const updatedFamily = await response.json();
         setFamilies(families.map(f => f.id === familyId ? updatedFamily : f));
-        alert('Member rejected successfully!');
+        showToast.success('Member rejected successfully!');
       } else {
         throw new Error('Failed to reject member');
       }
     } catch (error) {
       console.error('Error rejecting member:', error);
-      alert('Failed to reject member');
+      showToast.error('Failed to reject member');
     }
   };
 
@@ -263,7 +265,7 @@ const App: React.FC = () => {
     try {
       const family = families.find(f => f.id === familyId);
       if (!family) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
@@ -283,13 +285,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const updatedFamily = await response.json();
         setFamilies(families.map(f => f.id === familyId ? updatedFamily : f));
-        alert('Member updated successfully!');
+        showToast.success('Member updated successfully!');
       } else {
         throw new Error('Failed to update member');
       }
     } catch (error) {
       console.error('Error updating member:', error);
-      alert('Failed to update member');
+      showToast.error('Failed to update member');
     }
   };
 
@@ -304,13 +306,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const newAnnouncement = await response.json();
         setAnnouncements([...announcements, newAnnouncement]);
-        alert('Announcement created successfully!');
+        showToast.success('Announcement created successfully!');
       } else {
         throw new Error('Failed to create announcement');
       }
     } catch (error) {
       console.error('Error creating announcement:', error);
-      alert('Failed to create announcement');
+      showToast.error('Failed to create announcement');
     }
   };
 
@@ -322,13 +324,13 @@ const App: React.FC = () => {
 
       if (response.ok) {
         setAnnouncements(announcements.filter(a => a.id !== id));
-        alert('Announcement deleted successfully!');
+        showToast.success('Announcement deleted successfully!');
       } else {
         throw new Error('Failed to delete announcement');
       }
     } catch (error) {
       console.error('Error deleting announcement:', error);
-      alert('Failed to delete announcement');
+      showToast.error('Failed to delete announcement');
     }
   };
 
@@ -343,13 +345,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const newPayment = await response.json();
         setPayments([...payments, newPayment]);
-        alert('Payment created successfully!');
+        showToast.success('Payment created successfully!');
       } else {
         throw new Error('Failed to create payment');
       }
     } catch (error) {
       console.error('Error creating payment:', error);
-      alert('Failed to create payment');
+      showToast.error('Failed to create payment');
     }
   };
 
@@ -416,7 +418,7 @@ const App: React.FC = () => {
       }
 
       if (targetMembers.length === 0) {
-        alert('No members match the selected criteria');
+        showToast.error('No members match the selected criteria');
         return;
       }
 
@@ -451,11 +453,11 @@ const App: React.FC = () => {
 
       // Update local state
       setPayments([...payments, ...createdPayments]);
-      alert(`Successfully created ${createdPayments.length} payment demands!`);
+      showToast.success(`Successfully created ${createdPayments.length} payment demands!`);
 
     } catch (error) {
       console.error('Error creating bulk payments:', error);
-      alert('Failed to create bulk payments');
+      showToast.error('Failed to create bulk payments');
     }
   };
 
@@ -473,13 +475,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const updatedPayment = await response.json();
         setPayments(payments.map(p => p.id === paymentId ? updatedPayment : p));
-        alert('Payment marked as paid!');
+        showToast.success('Payment marked as paid!');
       } else {
         throw new Error('Failed to update payment');
       }
     } catch (error) {
       console.error('Error updating payment:', error);
-      alert('Failed to update payment');
+      showToast.error('Failed to update payment');
     }
   };
 
@@ -496,26 +498,26 @@ const App: React.FC = () => {
 
       if (response.ok) {
         setPayments(payments.filter(p => p.id !== paymentId));
-        alert('Payment deleted successfully!');
+        showToast.success('Payment deleted successfully!');
       } else {
         throw new Error('Failed to delete payment');
       }
     } catch (error) {
       console.error('Error deleting payment:', error);
-      alert('Failed to delete payment');
+      showToast.error('Failed to delete payment');
     }
   };
 
   const handleAddMember = async (newMemberData: Omit<FamilyMember, 'id' | 'status' | 'familyId'>) => {
     try {
       if (!user?.familyId) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
       const family = families.find(f => f.id === user.familyId);
       if (!family) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
@@ -541,25 +543,25 @@ const App: React.FC = () => {
       if (response.ok) {
         const updatedFamily = await response.json();
         setFamilies(families.map(f => f.id === user.familyId ? updatedFamily : f));
-        alert('Member added successfully! Waiting for admin approval.');
+        showToast.success('Member added successfully! Waiting for admin approval.');
       } else {
         throw new Error('Failed to add member');
       }
     } catch (error) {
       console.error('Error adding member:', error);
-      alert('Failed to add member');
+      showToast.error('Failed to add member');
     }
   };
   const handleDeleteRequest = async (memberId: string) => {
     try {
       if (!user?.familyId) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
       const family = families.find(f => f.id === user.familyId);
       if (!family) {
-        alert('Family not found');
+        showToast.error('Family not found');
         return;
       }
 
@@ -583,13 +585,13 @@ const App: React.FC = () => {
       if (response.ok) {
         const updatedFamily = await response.json();
         setFamilies(families.map(f => f.id === user.familyId ? updatedFamily : f));
-        alert('Delete request sent to admin for approval!');
+        showToast.success('Delete request sent to admin for approval!');
       } else {
         throw new Error('Failed to send delete request');
       }
     } catch (error) {
       console.error('Error sending delete request:', error);
-      alert('Failed to send delete request');
+      showToast.error('Failed to send delete request');
     }
   };
   const handleSendFeedback = async (msg: string) => {
@@ -621,7 +623,7 @@ const App: React.FC = () => {
       }
     } catch (error) {
       console.error('Error sending feedback:', error);
-      alert('Failed to send feedback');
+      showToast.error('Failed to send feedback');
     }
   };
 
@@ -829,6 +831,9 @@ const App: React.FC = () => {
             )}
           </>
         )}
+
+        {/* Toast Notifications */}
+        <Toaster position="top-center" />
       </div>
     </Router>
   );

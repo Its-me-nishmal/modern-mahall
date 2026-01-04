@@ -3,6 +3,7 @@ import {
   User, Plus, Trash2, Home, CreditCard, MessageSquare,
   Newspaper, Users, Send, Clock, AlertTriangle, CheckCircle, MapPin, Filter, PlayCircle, FileText, Phone, Edit2
 } from 'lucide-react';
+import { showToast } from '../utils/toast';
 import { Family, FamilyMember, Status, Announcement, Payment, Feedback } from '../types';
 
 interface FamilyDashboardProps {
@@ -83,7 +84,7 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
     if (feedbackMsg.trim()) {
       onSendFeedback(feedbackMsg);
       setFeedbackMsg('');
-      alert("Feedback sent successfully!");
+      showToast.success("Feedback sent successfully!");
     }
   };
 

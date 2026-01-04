@@ -202,11 +202,6 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onRegister }) => {
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send OTP'}
               </button>
-
-              <div className="mt-4 text-center">
-                <p className="text-xs text-gray-400">Demo: Admin: 919999999999 | User: 919876543210</p>
-                <p className="text-xs text-emerald-600 mt-1">Check backend console for OTP in development mode</p>
-              </div>
             </form>
           )}
 
@@ -233,9 +228,6 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onRegister }) => {
                   maxLength={6}
                   autoFocus
                 />
-                <p className="text-xs text-center text-gray-500">
-                  Check your backend console for the OTP code
-                </p>
               </div>
 
               {error && <p className="text-red-500 text-xs text-center">{error}</p>}

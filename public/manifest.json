@@ -1,6 +1,7 @@
 {
     "name": "Modern Mahall",
     "short_name": "Mahall",
+    "version": "2.0.0",
     "description": "Modern Mahall Management System - Manage your community with ease",
     "start_url": "/",
     "display": "standalone",
