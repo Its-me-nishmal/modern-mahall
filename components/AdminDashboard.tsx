@@ -1976,7 +1976,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           maxAmount: financialReportFilters.maxAmount ? parseFloat(financialReportFilters.maxAmount) : undefined
         };
 
-        const response = await fetch(`http://localhost:3001${endpoint}`, {
+        const response = await fetch(`https://modern-mahall-two.vercel.app${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
