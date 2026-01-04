@@ -49,7 +49,7 @@ const allowedOrigins = [
     'http://localhost:3000', // Alternative port
     'http://127.0.0.1:5173',
     'http://localhost:3001',
-    'https://modern-mahall-two.vercel.app', // Production frontend
+    'https://modern-mahallu.vercel.app', // Production frontend
     // Add your production domain here
 ];
 
