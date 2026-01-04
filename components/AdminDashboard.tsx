@@ -134,6 +134,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [reportType, setReportType] = useState<'members' | 'financial'>('members');
   const [exportFormat, setExportFormat] = useState<'pdf' | 'excel'>('pdf');
   const [isExporting, setIsExporting] = useState(false);
+  const [actionMode, setActionMode] = useState<'preview' | 'download'>('preview');
 
   // Member Report Filters
   const [memberReportFilters, setMemberReportFilters] = useState({
@@ -1949,6 +1950,57 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   );
 
   const renderReports = () => {
+    // Compute filtered data for preview
+    const getFilteredData = () => {
+      if (reportType === 'members') {
+        return filteredMembers.filter(m => {
+          const { wards, gender, minAge, maxAge, bloodGroup, maritalStatus, rationCardType, education, job } = memberReportFilters;
+
+          if (wards.length > 0 && !wards.includes(m.ward)) return false;
+          if (gender !== 'All' && m.gender !== gender) return false;
+          if (minAge && m.age < parseInt(minAge)) return false;
+          if (maxAge && m.age > parseInt(maxAge)) return false;
+          if (bloodGroup !== 'All' && m.bloodGroup !== bloodGroup) return false;
+          if (maritalStatus !== 'All' && m.maritalStatus !== maritalStatus) return false;
+          if (rationCardType !== 'All' && m.rationCardType !== rationCardType) return false;
+          if (education && (!m.education || !m.education.toLowerCase().includes(education.toLowerCase()))) return false;
+          if (job && (!m.job || !m.job.toLowerCase().includes(job.toLowerCase()))) return false;
+
+          return true;
+        });
+      } else {
+        // Financial data
+        const familyMap = new Map<string, Family>(families.map(f => [f.id, f]));
+        return payments.filter(p => {
+          const { dateRange, paymentStatus, wards, minAmount, maxAmount } = financialReportFilters;
+
+          if (dateRange.start && dateRange.end) {
+            const paymentDate = new Date(p.date);
+            const startDate = new Date(dateRange.start);
+            const endDate = new Date(dateRange.end);
+            if (paymentDate < startDate || paymentDate > endDate) return false;
+          }
+
+          if (paymentStatus !== 'All' && p.status !== paymentStatus) return false;
+
+          if (wards.length > 0) {
+            const family = familyMap.get(p.familyId);
+            if (!family || !wards.includes(family.ward)) return false;
+          }
+
+          if (minAmount && p.amount < parseFloat(minAmount)) return false;
+          if (maxAmount && p.amount > parseFloat(maxAmount)) return false;
+
+          return true;
+        }).map(p => ({
+          ...p,
+          familyCode: familyMap.get(p.familyId)?.code || 'N/A',
+          familyHead: familyMap.get(p.familyId)?.headName || 'N/A',
+          ward: familyMap.get(p.familyId)?.ward || 'N/A'
+        }));
+      }
+    };
+
     const handleExport = async () => {
       setIsExporting(true);
       try {
@@ -2281,60 +2333,198 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           )}
         </div>
 
-        {/* Export Section */}
+        {/* Action Mode Section */}
         <div className="bg-white p-6 rounded-xl border border-gray-200">
-          <h3 className="font-bold text-gray-800 mb-4">Export Options</h3>
+          <h3 className="font-bold text-gray-800 mb-4">Action</h3>
 
+          {/* Action Mode Toggle */}
           <div className="flex gap-4 mb-4">
             <button
-              onClick={() => setExportFormat('pdf')}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'pdf'
-                ? 'border-red-500 bg-red-50 text-red-700'
+              onClick={() => setActionMode('preview')}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${actionMode === 'preview'
+                ? 'border-purple-500 bg-purple-50 text-purple-700'
                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                 }`}
             >
               <FileText className="w-5 h-5 inline mr-2" />
-              PDF Format
+              Preview Table
             </button>
             <button
-              onClick={() => setExportFormat('excel')}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'excel'
-                ? 'border-green-500 bg-green-50 text-green-700'
+              onClick={() => setActionMode('download')}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${actionMode === 'download'
+                ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                 }`}
             >
-              <FileText className="w-5 h-5 inline mr-2" />
-              Excel Format
+              <Download className="w-5 h-5 inline mr-2" />
+              Download File
             </button>
           </div>
 
-          <button
-            onClick={handleExport}
-            disabled={isExporting}
-            className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all ${isExporting
-              ? 'bg-gray-400 cursor-not-allowed'
-              : reportType === 'members'
-                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:shadow-lg'
-                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg'
-              }`}
-          >
-            {isExporting ? (
-              <>
-                <div className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                Generating Report...
-              </>
-            ) : (
-              <>
-                <Download className="w-5 h-5 inline mr-2" />
-                Download {reportType === 'members' ? 'Member' : 'Financial'} Report ({exportFormat.toUpperCase()})
-              </>
-            )}
-          </button>
+          {actionMode === 'download' ? (
+            <>
+              {/* Format Selection */}
+              <div className="flex gap-4 mb-4">
+                <button
+                  onClick={() => setExportFormat('pdf')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'pdf'
+                    ? 'border-red-500 bg-red-50 text-red-700'
+                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                >
+                  <FileText className="w-5 h-5 inline mr-2" />
+                  PDF Format
+                </button>
+                <button
+                  onClick={() => setExportFormat('excel')}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'excel'
+                    ? 'border-green-500 bg-green-50 text-green-700'
+                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                >
+                  <FileText className="w-5 h-5 inline mr-2" />
+                  Excel Format
+                </button>
+              </div>
 
-          <p className="text-xs text-gray-500 mt-3 text-center">
-            Report will include all data matching your selected filters
-          </p>
+              <button
+                onClick={handleExport}
+                disabled={isExporting}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all ${isExporting
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : reportType === 'members'
+                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:shadow-lg'
+                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg'
+                  }`}
+              >
+                {isExporting ? (
+                  <>
+                    <div className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Generating Report...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-5 h-5 inline mr-2" />
+                    Download {reportType === 'members' ? 'Member' : 'Financial'} Report ({exportFormat.toUpperCase()})
+                  </>
+                )}
+              </button>
+
+              <p className="text-xs text-gray-500 mt-3 text-center">
+                Report will include all data matching your selected filters
+              </p>
+            </>
+          ) : (
+            <div className="pt-2">
+              <p className="text-sm text-gray-600 mb-4 text-center">
+                Showing filtered results ({getFilteredData().length} records)
+              </p>
+            </div>
+          )}
         </div>
+
+        {/* Preview Table */}
+        {actionMode === 'preview' && (
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="p-4 bg-gray-50 border-b border-gray-200">
+              <h3 className="font-bold text-gray-800">
+                {reportType === 'members' ? 'Member Directory Preview' : 'Financial Statement Preview'}
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {getFilteredData().length} records match your filters
+              </p>
+            </div>
+
+            <div className="overflow-x-auto max-h-96 overflow-y-auto">
+              {reportType === 'members' ? (
+                <table className="w-full text-sm">
+                  <thead className="bg-emerald-50 sticky top-0">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Family Code</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Name</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Relation</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Age</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Gender</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Ward</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Blood Group</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Phone</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Education</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Job</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getFilteredData().length > 0 ? (
+                      (getFilteredData() as any[]).map((member, idx) => (
+                        <tr key={idx} className="border-b hover:bg-gray-50">
+                          <td className="px-4 py-3">{member.familyCode}</td>
+                          <td className="px-4 py-3 font-medium">{member.name}</td>
+                          <td className="px-4 py-3">{member.relation}</td>
+                          <td className="px-4 py-3">{member.age}</td>
+                          <td className="px-4 py-3">{member.gender}</td>
+                          <td className="px-4 py-3">{member.ward}</td>
+                          <td className="px-4 py-3">{member.bloodGroup || 'N/A'}</td>
+                          <td className="px-4 py-3">{member.phone || 'N/A'}</td>
+                          <td className="px-4 py-3">{member.education || 'N/A'}</td>
+                          <td className="px-4 py-3">{member.job || 'N/A'}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
+                          No members match your filter criteria
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="bg-blue-50 sticky top-0">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Date</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Family Code</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Family Head</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Ward</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Member</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Title</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Amount</th>
+                      <th className="px-4 py-3 text-left font-bold text-gray-700 border-b">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getFilteredData().length > 0 ? (
+                      (getFilteredData() as any[]).map((payment, idx) => (
+                        <tr key={idx} className="border-b hover:bg-gray-50">
+                          <td className="px-4 py-3">{payment.date}</td>
+                          <td className="px-4 py-3">{payment.familyCode}</td>
+                          <td className="px-4 py-3">{payment.familyHead}</td>
+                          <td className="px-4 py-3">{payment.ward}</td>
+                          <td className="px-4 py-3">{payment.memberName || 'N/A'}</td>
+                          <td className="px-4 py-3">{payment.title || 'N/A'}</td>
+                          <td className="px-4 py-3 font-bold">₹{payment.amount}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-1 rounded-full text-xs font-bold ${payment.status === 'Paid'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-amber-100 text-amber-700'
+                              }`}>
+                              {payment.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                          No payments match your filter criteria
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
