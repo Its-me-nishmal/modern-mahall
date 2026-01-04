@@ -64,7 +64,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onRegister }) => {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobile: phone })
+        body: JSON.stringify({ mobile: `91${phone}` })
       });
 
       const data = await response.json();
@@ -103,7 +103,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onRegister }) => {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mobile: phone, otp })
+        body: JSON.stringify({ mobile: `91${phone}`, otp })
       });
 
       const data = await response.json();
