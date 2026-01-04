@@ -6,6 +6,8 @@ import FamilyDashboard from './components/FamilyDashboard';
 import OnboardingForm from './components/OnboardingForm';
 import NotificationManager from './components/NotificationManager';
 import NotificationInbox from './components/NotificationInbox';
+import ErrorBoundary from './components/ErrorBoundary';
+import ErrorPage from './components/ErrorPage';
 import { User, Family, Status, UserRole, FamilyMember, Log, Announcement, Payment, Feedback, TargetingCriteria } from './types';
 import { LogOut, Bell, Loader2 } from 'lucide-react';
 
@@ -755,56 +757,60 @@ const App: React.FC = () => {
         </nav>
 
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Routes>
-            <Route path="/" element={
-              isLoading ? (
-                <div className="flex flex-col items-center justify-center pt-20">
-                  <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
-                  <h2 className="text-xl font-bold">Loading Data...</h2>
-                </div>
-              ) : user?.role === UserRole.ADMIN ? (
-                <AdminDashboard
-                  families={families}
-                  logs={logs}
-                  announcements={announcements}
-                  payments={payments}
-                  feedbacks={feedbacks}
-                  // All handlers are placeholders relying on future API integration tests
-                  onApproveFamily={handleApproveFamily}
-                  onApproveMember={handleApproveMember}
-                  onRejectMember={handleRejectMember}
-                  onEditMember={handleEditMember}
-                  onCreateAnnouncement={handleCreateAnnouncement}
-                  onDeleteAnnouncement={handleDeleteAnnouncement}
-                  onBulkPaymentCreate={handleBulkPaymentCreate}
-                  onCreatePayment={handleCreatePayment}
-                  onMarkPaymentPaid={handleMarkPaymentPaid}
-                  onDeletePayment={handleDeletePayment}
-                  onTabChange={handleAdminTabChange}
-                />
-              ) : (
-                currentUserFamily ? (
-                  <FamilyDashboard
-                    family={currentUserFamily}
-                    announcements={announcements}
-                    payments={payments}
-                    currentUserName={user?.name}
-                    isHead={user?.role === UserRole.HEAD}
-                    onAddMember={handleAddMember}
-                    onUpdateMember={(memberId, updates) => handleEditMember(currentUserFamily.id, memberId, updates)}
-                    onDeleteRequest={handleDeleteRequest}
-                    onSendFeedback={handleSendFeedback}
-                    onTabChange={handleMemberTabChange}
-                  />
-                ) : (
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={
+                isLoading ? (
                   <div className="flex flex-col items-center justify-center pt-20">
                     <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
-                    <h2 className="text-xl font-bold">Setting up your dashboard...</h2>
+                    <h2 className="text-xl font-bold">Loading Data...</h2>
                   </div>
+                ) : user?.role === UserRole.ADMIN ? (
+                  <AdminDashboard
+                    families={families}
+                    logs={logs}
+                    announcements={announcements}
+                    payments={payments}
+                    feedbacks={feedbacks}
+                    // All handlers are placeholders relying on future API integration tests
+                    onApproveFamily={handleApproveFamily}
+                    onApproveMember={handleApproveMember}
+                    onRejectMember={handleRejectMember}
+                    onEditMember={handleEditMember}
+                    onUpdateFamily={() => { }} // TODO: Implement
+                    onCreateAnnouncement={handleCreateAnnouncement}
+                    onDeleteAnnouncement={handleDeleteAnnouncement}
+                    onBulkPaymentCreate={handleBulkPaymentCreate}
+                    onCreatePayment={handleCreatePayment}
+                    onMarkPaymentPaid={handleMarkPaymentPaid}
+                    onDeletePayment={handleDeletePayment}
+                    onTabChange={handleAdminTabChange}
+                  />
+                ) : (
+                  currentUserFamily ? (
+                    <FamilyDashboard
+                      family={currentUserFamily}
+                      announcements={announcements}
+                      payments={payments}
+                      currentUserName={user?.name}
+                      isHead={user?.role === UserRole.HEAD}
+                      onAddMember={handleAddMember}
+                      onUpdateMember={(memberId, updates) => handleEditMember(currentUserFamily.id, memberId, updates)}
+                      onDeleteRequest={handleDeleteRequest}
+                      onSendFeedback={handleSendFeedback}
+                      onTabChange={handleMemberTabChange}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center pt-20">
+                      <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
+                      <h2 className="text-xl font-bold">Setting up your dashboard...</h2>
+                    </div>
+                  )
                 )
-              )
-            } />
-          </Routes>
+              } />
+              <Route path="*" element={<ErrorPage title="404 - Page Not Found" />} />
+            </Routes>
+          </ErrorBoundary>
         </main>
 
         {/* Notification Components */}

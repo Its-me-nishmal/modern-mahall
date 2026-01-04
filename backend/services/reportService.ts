@@ -26,7 +26,7 @@ export interface FinancialFilter {
 }
 
 // Helper to filter families/members based on criteria
-function filterMembers(families: IFamily[], filters: MemberFilter) {
+export function filterMembers(families: IFamily[], filters: MemberFilter) {
     let allMembers: any[] = [];
 
     families.forEach(family => {
@@ -85,7 +85,7 @@ function filterMembers(families: IFamily[], filters: MemberFilter) {
 }
 
 // Helper to filter payments based on criteria
-function filterPayments(payments: IPayment[], filters: FinancialFilter) {
+export function filterPayments(payments: IPayment[], filters: FinancialFilter) {
     return payments.filter(payment => {
         // Filter by date range
         if (filters.dateRange) {

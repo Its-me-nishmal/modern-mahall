@@ -7,6 +7,8 @@ import { Router, Request, Response } from 'express';
 import database from '../db/index.js';
 import { generateOTP, verifyOTP, sendOTP } from '../services/otpService.js';
 import { generateToken } from '../services/tokenService.js';
+import { otpLimiter, authLimiter } from '../utils/rateLimiter.js';
+import { validateBody, sendOTPSchema, verifyOTPSchema, registerSchema } from '../utils/validation.js';
 
 const router = Router();
 
@@ -18,18 +20,14 @@ const router = Router();
  * POST /api/auth/send-otp
  * Send OTP to user's mobile number
  */
-router.post('/send-otp', async (req: Request, res: Response) => {
-    const { mobile } = req.body;
-
-    if (!mobile) {
-        return res.status(400).json({ message: 'Mobile number is required' });
-    }
+router.post('/send-otp', otpLimiter, validateBody(sendOTPSchema), async (req: Request, res: Response) => {
+    const { mobile } = (req as any).validatedBody;
 
     try {
         // Generate OTP
         const otp = await generateOTP(mobile);
 
-        // Send OTP (logs to console in dev, would send SMS in production)
+        // Send OTP via SMS (or log in development)
         await sendOTP(mobile, otp);
 
         res.json({
@@ -47,12 +45,8 @@ router.post('/send-otp', async (req: Request, res: Response) => {
  * POST /api/auth/verify-otp
  * Verify OTP and login/register user
  */
-router.post('/verify-otp', async (req: Request, res: Response) => {
-    const { mobile, otp } = req.body;
-
-    if (!mobile || !otp) {
-        return res.status(400).json({ message: 'Mobile number and OTP are required' });
-    }
+router.post('/verify-otp', authLimiter, validateBody(verifyOTPSchema), async (req: Request, res: Response) => {
+    const { mobile, otp } = (req as any).validatedBody;
 
     try {
         // Verify OTP
@@ -113,12 +107,8 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
  * POST /api/auth/register
  * Register new user (create family)
  */
-router.post('/register', async (req: Request, res: Response) => {
-    const { phone, headName, address, ward, age, gender } = req.body;
-
-    if (!phone || !headName || !address || !ward || !age || !gender) {
-        return res.status(400).json({ message: 'All fields are required' });
-    }
+router.post('/register', authLimiter, validateBody(registerSchema), async (req: Request, res: Response) => {
+    const { phone, headName, address, ward, age, gender } = (req as any).validatedBody;
 
     try {
         // Check if user already exists
@@ -197,12 +187,8 @@ router.post('/register', async (req: Request, res: Response) => {
  * POST /api/auth/admin/send-otp
  * Send OTP to admin's mobile number
  */
-router.post('/admin/send-otp', async (req: Request, res: Response) => {
-    const { mobile } = req.body;
-
-    if (!mobile) {
-        return res.status(400).json({ message: 'Mobile number is required' });
-    }
+router.post('/admin/send-otp', otpLimiter, validateBody(sendOTPSchema), async (req: Request, res: Response) => {
+    const { mobile } = (req as any).validatedBody;
 
     try {
         // Check if mobile belongs to an admin
@@ -233,12 +219,8 @@ router.post('/admin/send-otp', async (req: Request, res: Response) => {
  * POST /api/auth/admin/verify-otp
  * Verify admin OTP and login
  */
-router.post('/admin/verify-otp', async (req: Request, res: Response) => {
-    const { mobile, otp } = req.body;
-
-    if (!mobile || !otp) {
-        return res.status(400).json({ message: 'Mobile number and OTP are required' });
-    }
+router.post('/admin/verify-otp', authLimiter, validateBody(verifyOTPSchema), async (req: Request, res: Response) => {
+    const { mobile, otp } = (req as any).validatedBody;
 
     try {
         // Verify OTP

@@ -6,9 +6,12 @@ dotenv.config();
 // Now import everything else
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { initializeDatabase } from './db/index.js';
 // import { initializeVapidKeys } from './utils/vapidKeys.js';
 import { initializeWebPush } from './services/notificationService.js';
+import { apiLimiter } from './utils/rateLimiter.js';
 import authRoutes from './api/authRoutes.js';
 import adminRoutes from './api/adminRoutes.js';
 import dataRoutes from './api/dataRoutes.js';
@@ -18,44 +21,99 @@ import reportRoutes from './api/reportRoutes.js';
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
-// Middleware
-// Configure CORS to allow requests from frontend
-// app.use(cors({
-//     origin: (origin, callback) => {
-//         // Allow requests with no origin (like mobile apps or curl requests)
-//         if (!origin) return callback(null, true);
+// ============================================
+// SECURITY MIDDLEWARE
+// ============================================
 
-//         // Allow any localhost origin
-//         if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-//             return callback(null, true);
-//         }
+// Helmet - Security headers
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"], // For inline scripts (consider removing in production)
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:', 'https:'],
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+        },
+    },
+    crossOriginEmbedderPolicy: false, // Allow embedding
+}));
 
-//         // Allow local network IPs (192.168.x.x, 10.x.x.x, etc.) for mobile testing
-//         if (origin.startsWith('http://192.168.') || origin.startsWith('http://10.')) {
-//             return callback(null, true);
-//         }
+// CORS Configuration - Strict in production
+const allowedOrigins = [
+    'http://localhost:5173', // Vite dev server
+    'http://localhost:3000', // Alternative port
+    'http://127.0.0.1:5173',
+    'http://localhost:3001',
+    'https://modern-mahall-two.vercel.app', // Production frontend
+    // Add your production domain here
+];
 
-//         // Allow Vercel deployments (optional, good practice)
-//         if (origin.endsWith('.vercel.app')) {
-//             return callback(null, true);
-//         }
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, Postman, curl)
+        if (!origin) return callback(null, true);
 
-//         // Default: Allow it (or restrict if strict security needed)
-//         // For development, we'll be permissive
-//         return callback(null, true);
-//     },
-//     credentials: true,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type', 'Authorization']
-// }));
+        if (process.env.NODE_ENV === 'production') {
+            // Strict in production
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            } else {
+                return callback(new Error('Not allowed by CORS'));
+            }
+        } else {
+            // Permissive in development (localhost, local IPs)
+            if (origin.includes('localhost') ||
+                origin.includes('127.0.0.1') ||
+                origin.startsWith('http://192.168.') ||
+                origin.startsWith('http://10.') ||
+                allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback(null, true); // Allow all in dev
+        }
+    },
+    credentials: true, // Allow cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
-app.use(cors());
-app.use(express.json());
+// Cookie parser for httpOnly cookies
+app.use(cookieParser());
 
-// Simple error handling middleware
+// Regular middleware
+app.use(express.json({ limit: '10mb' })); // Limit body size
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Apply rate limiting to all /api routes
+app.use('/api', apiLimiter);
+
+// Global error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).send('Internal Server Error');
+    console.error('Global error handler:', {
+        message: err.message,
+        stack: err.stack,
+        url: req.url,
+        method: req.method,
+    });
+
+    // CORS errors
+    if (err.message === 'Not allowed by CORS') {
+        return res.status(403).json({
+            message: 'Access forbidden: Origin not allowed'
+        });
+    }
+
+    // Default error
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({
+        message: err.message || 'Internal Server Error',
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
 });
 
 // Health Check Endpoint

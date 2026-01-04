@@ -11,18 +11,23 @@
     },
     "dependencies": {
         "@google/genai": "^1.30.0",
+        "@types/cookie-parser": "^1.4.10",
         "@types/express": "^5.0.6",
         "@types/pdfkit": "^0.17.4",
         "@types/web-push": "^3.6.4",
         "bcryptjs": "^2.4.3",
+        "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
         "dotenv": "^17.2.3",
         "exceljs": "^4.4.0",
         "express": "^5.2.1",
+        "express-rate-limit": "^8.2.1",
+        "helmet": "^8.1.0",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.8.4",
         "pdfkit": "^0.17.2",
-        "web-push": "^3.6.7"
+        "web-push": "^3.6.7",
+        "zod": "^4.3.4"
     },
     "devDependencies": {
         "@types/bcryptjs": "^2.4.6",

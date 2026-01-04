@@ -35,7 +35,10 @@ export async function generateOTP(mobile: string): Promise<string> {
 
     await database.createOTP(otp);
 
-    console.log(`✓ OTP generated for ${mobile}: ${otpCode} (expires in ${OTP_EXPIRY_MINUTES} minutes)`);
+    // Only log in development for debugging
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(`✓ OTP generated for ${mobile}: ${otpCode} (expires in ${OTP_EXPIRY_MINUTES} minutes)`);
+    }
 
     return otpCode;
 }
