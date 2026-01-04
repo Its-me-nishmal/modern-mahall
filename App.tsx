@@ -109,7 +109,7 @@ const App: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          phone: phoneToUse,
+          phone: `91${phoneToUse}`,
           ...data
         })
       });
