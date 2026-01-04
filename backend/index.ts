@@ -13,6 +13,7 @@ import authRoutes from './api/authRoutes.js';
 import adminRoutes from './api/adminRoutes.js';
 import dataRoutes from './api/dataRoutes.js';
 import notificationRoutes from './api/notificationRoutes.js';
+import reportRoutes from './api/reportRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
@@ -72,6 +73,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Initialize DB and start server
 async function startServer() {

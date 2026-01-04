@@ -1918,31 +1918,426 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     </div>
   );
 
-  const renderReports = () => (
-    <div className="animate-fadeIn space-y-6">
-      <h2 className="text-xl font-bold text-gray-900">Reports Center</h2>
+  const renderReports = () => {
+    // Report Filter State
+    const [reportType, setReportType] = useState<'members' | 'financial'>('members');
+    const [exportFormat, setExportFormat] = useState<'pdf' | 'excel'>('pdf');
+    const [isExporting, setIsExporting] = useState(false);
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-white p-6 rounded-xl border border-gray-200">
-          <FileText className="w-8 h-8 text-emerald-600 mb-4" />
-          <h3 className="font-bold text-gray-800">Financial Statement</h3>
-          <p className="text-gray-500 text-sm mb-4">Monthly collection details, pending dues list.</p>
-          <button className="text-emerald-600 font-medium text-sm flex items-center gap-1 hover:underline">
-            <Download className="w-4 h-4" /> Download PDF
+    // Member Report Filters
+    const [memberReportFilters, setMemberReportFilters] = useState({
+      wards: [] as string[],
+      gender: 'All' as 'Male' | 'Female' | 'All',
+      minAge: '',
+      maxAge: '',
+      bloodGroup: 'All',
+      maritalStatus: 'All',
+      rationCardType: 'All',
+      education: '',
+      job: ''
+    });
+
+    // Financial Report Filters
+    const [financialReportFilters, setFinancialReportFilters] = useState({
+      dateRange: {
+        start: '',
+        end: ''
+      },
+      paymentStatus: 'All' as 'Paid' | 'Pending' | 'All',
+      wards: [] as string[],
+      minAmount: '',
+      maxAmount: ''
+    });
+
+    const handleExport = async () => {
+      setIsExporting(true);
+      try {
+        const endpoint = reportType === 'members'
+          ? '/api/reports/members/export'
+          : '/api/reports/financial/export';
+
+        const filters = reportType === 'members' ? {
+          wards: memberReportFilters.wards.length > 0 ? memberReportFilters.wards : undefined,
+          gender: memberReportFilters.gender !== 'All' ? memberReportFilters.gender : undefined,
+          minAge: memberReportFilters.minAge ? parseInt(memberReportFilters.minAge) : undefined,
+          maxAge: memberReportFilters.maxAge ? parseInt(memberReportFilters.maxAge) : undefined,
+          bloodGroup: memberReportFilters.bloodGroup !== 'All' ? memberReportFilters.bloodGroup : undefined,
+          maritalStatus: memberReportFilters.maritalStatus !== 'All' ? memberReportFilters.maritalStatus : undefined,
+          rationCardType: memberReportFilters.rationCardType !== 'All' ? memberReportFilters.rationCardType : undefined,
+          education: memberReportFilters.education || undefined,
+          job: memberReportFilters.job || undefined
+        } : {
+          dateRange: financialReportFilters.dateRange.start && financialReportFilters.dateRange.end
+            ? financialReportFilters.dateRange
+            : undefined,
+          paymentStatus: financialReportFilters.paymentStatus !== 'All' ? financialReportFilters.paymentStatus : undefined,
+          wards: financialReportFilters.wards.length > 0 ? financialReportFilters.wards : undefined,
+          minAmount: financialReportFilters.minAmount ? parseFloat(financialReportFilters.minAmount) : undefined,
+          maxAmount: financialReportFilters.maxAmount ? parseFloat(financialReportFilters.maxAmount) : undefined
+        };
+
+        const response = await fetch(`http://localhost:3001${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ format: exportFormat, filters })
+        });
+
+        if (!response.ok) {
+          throw new Error('Export failed');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${reportType}_report_${new Date().toISOString().split('T')[0]}.${exportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        alert('Report exported successfully!');
+      } catch (error) {
+        console.error('Export error:', error);
+        alert('Failed to export report. Please try again.');
+      } finally {
+        setIsExporting(false);
+      }
+    };
+
+    return (
+      <div className="animate-fadeIn space-y-6">
+        <h2 className="text-xl font-bold text-gray-900">Reports Center</h2>
+
+        {/* Report Type Selector */}
+        <div className="flex gap-4 bg-white p-2 rounded-xl border border-gray-200">
+          <button
+            onClick={() => setReportType('members')}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${reportType === 'members'
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md'
+                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+              }`}
+          >
+            <Users className="w-5 h-5 inline mr-2" />
+            Member Directory
+          </button>
+          <button
+            onClick={() => setReportType('financial')}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${reportType === 'financial'
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+              }`}
+          >
+            <DollarSign className="w-5 h-5 inline mr-2" />
+            Financial Statement
           </button>
         </div>
 
+        {/* Filters Section */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-gray-800 flex items-center gap-2">
+              <Filter className="w-5 h-5 text-gray-600" />
+              Filter Options
+            </h3>
+          </div>
+
+          {reportType === 'members' ? (
+            <div className="space-y-4">
+              {/* Ward Filter */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Wards</label>
+                <div className="flex flex-wrap gap-2">
+                  {['Ward 1', 'Ward 2', 'Ward 3', 'Ward 4'].map(w => (
+                    <button
+                      key={w}
+                      type="button"
+                      onClick={() => {
+                        const newWards = memberReportFilters.wards.includes(w)
+                          ? memberReportFilters.wards.filter(i => i !== w)
+                          : [...memberReportFilters.wards, w];
+                        setMemberReportFilters({ ...memberReportFilters, wards: newWards });
+                      }}
+                      className={`px-3 py-1 rounded-full text-xs font-bold border ${memberReportFilters.wards.includes(w)
+                          ? 'bg-emerald-600 text-white border-emerald-600'
+                          : 'bg-white text-gray-500 border-gray-200'
+                        }`}
+                    >
+                      {w}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Demographics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Gender</label>
+                  <select
+                    className="w-full text-sm border rounded p-2"
+                    value={memberReportFilters.gender}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, gender: e.target.value as any })}
+                  >
+                    <option value="All">All</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Blood Group</label>
+                  <select
+                    className="w-full text-sm border rounded p-2"
+                    value={memberReportFilters.bloodGroup}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, bloodGroup: e.target.value })}
+                  >
+                    <option value="All">All</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Marital Status</label>
+                  <select
+                    className="w-full text-sm border rounded p-2"
+                    value={memberReportFilters.maritalStatus}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, maritalStatus: e.target.value })}
+                  >
+                    <option value="All">All</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Divorced">Divorced</option>
+                    <option value="Widowed">Widowed</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Ration Card</label>
+                  <select
+                    className="w-full text-sm border rounded p-2"
+                    value={memberReportFilters.rationCardType}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, rationCardType: e.target.value })}
+                  >
+                    <option value="All">All</option>
+                    <option value="APL">APL</option>
+                    <option value="BPL">BPL</option>
+                    <option value="AAY">AAY</option>
+                    <option value="PHH">PHH</option>
+                    <option value="None">None</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Age Range */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Min Age</label>
+                  <input
+                    type="number"
+                    className="w-full text-sm border rounded p-2"
+                    placeholder="0"
+                    value={memberReportFilters.minAge}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, minAge: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Max Age</label>
+                  <input
+                    type="number"
+                    className="w-full text-sm border rounded p-2"
+                    placeholder="100"
+                    value={memberReportFilters.maxAge}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, maxAge: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* Education & Job */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Education</label>
+                  <input
+                    type="text"
+                    className="w-full text-sm border rounded p-2"
+                    placeholder="e.g., SSLC, Degree"
+                    value={memberReportFilters.education}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, education: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Job</label>
+                  <input
+                    type="text"
+                    className="w-full text-sm border rounded p-2"
+                    placeholder="e.g., Teacher, Driver"
+                    value={memberReportFilters.job}
+                    onChange={(e) => setMemberReportFilters({ ...memberReportFilters, job: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Date Range */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    className="w-full text-sm border rounded p-2"
+                    value={financialReportFilters.dateRange.start}
+                    onChange={(e) => setFinancialReportFilters({
+                      ...financialReportFilters,
+                      dateRange: { ...financialReportFilters.dateRange, start: e.target.value }
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">End Date</label>
+                  <input
+                    type="date"
+                    className="w-full text-sm border rounded p-2"
+                    value={financialReportFilters.dateRange.end}
+                    onChange={(e) => setFinancialReportFilters({
+                      ...financialReportFilters,
+                      dateRange: { ...financialReportFilters.dateRange, end: e.target.value }
+                    })}
+                  />
+                </div>
+              </div>
+
+              {/* Payment Status */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Payment Status</label>
+                <select
+                  className="w-full text-sm border rounded p-2"
+                  value={financialReportFilters.paymentStatus}
+                  onChange={(e) => setFinancialReportFilters({ ...financialReportFilters, paymentStatus: e.target.value as any })}
+                >
+                  <option value="All">All</option>
+                  <option value="Paid">Paid Only</option>
+                  <option value="Pending">Pending Only</option>
+                </select>
+              </div>
+
+              {/* Ward Filter */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Wards</label>
+                <div className="flex flex-wrap gap-2">
+                  {['Ward 1', 'Ward 2', 'Ward 3', 'Ward 4'].map(w => (
+                    <button
+                      key={w}
+                      type="button"
+                      onClick={() => {
+                        const newWards = financialReportFilters.wards.includes(w)
+                          ? financialReportFilters.wards.filter(i => i !== w)
+                          : [...financialReportFilters.wards, w];
+                        setFinancialReportFilters({ ...financialReportFilters, wards: newWards });
+                      }}
+                      className={`px-3 py-1 rounded-full text-xs font-bold border ${financialReportFilters.wards.includes(w)
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-gray-500 border-gray-200'
+                        }`}
+                    >
+                      {w}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Amount Range */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Min Amount (₹)</label>
+                  <input
+                    type="number"
+                    className="w-full text-sm border rounded p-2"
+                    placeholder="0"
+                    value={financialReportFilters.minAmount}
+                    onChange={(e) => setFinancialReportFilters({ ...financialReportFilters, minAmount: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Max Amount (₹)</label>
+                  <input
+                    type="number"
+                    className="w-full text-sm border rounded p-2"
+                    placeholder="No limit"
+                    value={financialReportFilters.maxAmount}
+                    onChange={(e) => setFinancialReportFilters({ ...financialReportFilters, maxAmount: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Export Section */}
         <div className="bg-white p-6 rounded-xl border border-gray-200">
-          <Users className="w-8 h-8 text-blue-600 mb-4" />
-          <h3 className="font-bold text-gray-800">Member Directory</h3>
-          <p className="text-gray-500 text-sm mb-4">Full list of families, heads and contact details.</p>
-          <button className="text-blue-600 font-medium text-sm flex items-center gap-1 hover:underline">
-            <Download className="w-4 h-4" /> Download Excel
+          <h3 className="font-bold text-gray-800 mb-4">Export Options</h3>
+
+          <div className="flex gap-4 mb-4">
+            <button
+              onClick={() => setExportFormat('pdf')}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'pdf'
+                  ? 'border-red-500 bg-red-50 text-red-700'
+                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+            >
+              <FileText className="w-5 h-5 inline mr-2" />
+              PDF Format
+            </button>
+            <button
+              onClick={() => setExportFormat('excel')}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'excel'
+                  ? 'border-green-500 bg-green-50 text-green-700'
+                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+            >
+              <FileText className="w-5 h-5 inline mr-2" />
+              Excel Format
+            </button>
+          </div>
+
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all ${isExporting
+                ? 'bg-gray-400 cursor-not-allowed'
+                : reportType === 'members'
+                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:shadow-lg'
+                  : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg'
+              }`}
+          >
+            {isExporting ? (
+              <>
+                <div className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Generating Report...
+              </>
+            ) : (
+              <>
+                <Download className="w-5 h-5 inline mr-2" />
+                Download {reportType === 'members' ? 'Member' : 'Financial'} Report ({exportFormat.toUpperCase()})
+              </>
+            )}
           </button>
+
+          <p className="text-xs text-gray-500 mt-3 text-center">
+            Report will include all data matching your selected filters
+          </p>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const TargetSelector = () => (
     <div className="bg-gray-50 p-4 rounded-lg space-y-4">
