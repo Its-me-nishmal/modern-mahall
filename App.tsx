@@ -732,7 +732,7 @@ const App: React.FC = () => {
               <div className="flex items-center">
                 <span className="text-xl font-bold text-emerald-700 tracking-tight">Modern Mahall</span>
                 <span className="ml-3 px-2 py-0.5 rounded-full bg-gray-100 text-xs text-gray-600 font-medium hidden sm:inline-block">
-                  {user.role === UserRole.ADMIN ? 'Admin Portal' : 'Member Portal'}
+                  {(user.role === UserRole.ADMIN || user.role === UserRole.SUPER_ADMIN) ? 'Admin Portal' : 'Member Portal'}
                 </span>
               </div>
               <div className="flex items-center gap-4">
@@ -765,7 +765,7 @@ const App: React.FC = () => {
                     <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-4" />
                     <h2 className="text-xl font-bold">Loading Data...</h2>
                   </div>
-                ) : user?.role === UserRole.ADMIN ? (
+                ) : (user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN) ? (
                   <AdminDashboard
                     families={families}
                     logs={logs}
