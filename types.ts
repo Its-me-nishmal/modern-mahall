@@ -28,6 +28,9 @@ export interface TargetingCriteria {
   role?: 'Head' | 'Member' | 'All';
   specificFamilyIds?: string[];
   specificMemberIds?: string[]; // For individual member selection
+  bloodGroup?: string;
+  education?: string;
+  job?: string;
 }
 
 export interface Announcement {
@@ -60,7 +63,13 @@ export interface FamilyMember {
   familyId: string;
   name: string;
   relation: 'Head' | 'Father' | 'Mother' | 'Son' | 'Daughter' | 'Wife' | 'Other';
-  age: number;
+  age: number; // Keep for backward compatibility, but prefer dob calculation
+  dob?: string;
+  bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-' | 'Unknown';
+  education?: string;
+  job?: string;
+  maritalStatus?: 'Single' | 'Married' | 'Divorced' | 'Widowed';
+  email?: string;
   phone?: string;
   status: Status;
   gender: 'Male' | 'Female';
@@ -95,6 +104,11 @@ export interface Family {
   headId: string;
   ward: string;
   address: string;
+  houseName?: string;
+  rationCardType?: 'APL' | 'BPL' | 'AAY' | 'PHH' | 'None';
+  rationCardNumber?: string;
+  mahalNumber?: string; // Special ID for Mahall
+  annualIncome?: number;
   members: FamilyMember[];
   status: Status;
   balance: number; // Positive means due, negative means credit

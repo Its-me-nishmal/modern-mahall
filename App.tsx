@@ -624,7 +624,7 @@ const App: React.FC = () => {
   };
 
   // Handle admin tab changes - fetch data on demand
-  const handleAdminTabChange = useCallback(async (tab: 'overview' | 'families' | 'payments' | 'announcements' | 'reports' | 'inbox') => {
+  const handleAdminTabChange = useCallback(async (tab: 'overview' | 'families' | 'members' | 'payments' | 'announcements' | 'reports' | 'inbox') => {
     if (!token) return;
 
     try {
@@ -639,6 +639,7 @@ const App: React.FC = () => {
           if (paymentsRes.ok) setPayments(await paymentsRes.json());
           break;
         case 'families':
+        case 'members':
           const familiesRes2 = await fetch(`${API_BASE_URL}/data/families`, { headers: { Authorization: `Bearer ${token}` } });
           if (familiesRes2.ok) setFamilies(await familiesRes2.json());
           break;

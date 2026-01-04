@@ -10,6 +10,11 @@ export interface IFamily {
     headId: string;
     ward: string;
     address: string;
+    houseName?: string;
+    rationCardType?: 'APL' | 'BPL' | 'AAY' | 'PHH' | 'None';
+    rationCardNumber?: string;
+    mahalNumber?: string;
+    annualIncome?: number;
     status: 'pending' | 'approved' | 'rejected';
     paymentStatus: 'Paid' | 'Unpaid' | 'Partial';
     balance: number;
@@ -22,6 +27,12 @@ export interface IMember {
     name: string;
     relation: string;
     age: number;
+    dob?: string;
+    bloodGroup?: string;
+    education?: string;
+    job?: string;
+    maritalStatus?: string;
+    email?: string;
     gender: string;
     status: 'pending' | 'approved' | 'rejected';
     phone?: string;
@@ -86,6 +97,9 @@ export interface IAnnouncement {
         minAge?: number;
         maxAge?: number;
         gender?: 'Male' | 'Female' | 'All';
+        bloodGroup?: string;
+        education?: string;
+        job?: string;
         specificFamilyIds?: string[];
         specificMemberIds?: string[];
     };

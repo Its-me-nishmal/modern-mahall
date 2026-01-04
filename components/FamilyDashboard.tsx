@@ -31,6 +31,12 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
     name: '',
     relation: 'Son' as FamilyMember['relation'],
     age: 0,
+    dob: '',
+    bloodGroup: 'Unknown' as FamilyMember['bloodGroup'],
+    education: '',
+    job: '',
+    maritalStatus: 'Single' as FamilyMember['maritalStatus'],
+    email: '',
     gender: 'Male' as 'Male' | 'Female',
     phone: ''
   });
@@ -51,9 +57,25 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
 
   const handleSubmitMember = (e: React.FormEvent) => {
     e.preventDefault();
-    onAddMember(newMember);
+    // Calculate age from DOB if age is 0 or empty
+    let calculatedAge = newMember.age;
+    if (newMember.dob) {
+      const birthDate = new Date(newMember.dob);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      calculatedAge = age;
+    }
+
+    onAddMember({
+      ...newMember,
+      age: calculatedAge
+    });
     setIsModalOpen(false);
-    setNewMember({ name: '', relation: 'Son', age: 0, gender: 'Male', phone: '' });
+    setNewMember({ name: '', relation: 'Son', age: 0, dob: '', bloodGroup: 'Unknown', education: '', job: '', maritalStatus: 'Single', email: '', gender: 'Male', phone: '' });
   };
 
   const handleFeedbackSubmit = (e: React.FormEvent) => {
@@ -72,6 +94,12 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
     onUpdateMember(editingMember.id, {
       name: editingMember.name,
       age: editingMember.age,
+      dob: editingMember.dob,
+      bloodGroup: editingMember.bloodGroup,
+      education: editingMember.education,
+      job: editingMember.job,
+      maritalStatus: editingMember.maritalStatus,
+      email: editingMember.email,
       phone: editingMember.phone,
       relation: editingMember.relation,
       gender: editingMember.gender
@@ -129,7 +157,8 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
       // Check if all targeting fields are empty/undefined
       const hasNoTargeting = !target.wards && !target.gender &&
         !target.minAge && !target.maxAge &&
-        !target.specificFamilyIds && !target.specificMemberIds;
+        !target.specificFamilyIds && !target.specificMemberIds &&
+        !target.bloodGroup && !target.education && !target.job;
 
       if (hasNoTargeting) return true;
 
@@ -157,6 +186,21 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
         return false;
       }
       if (target.maxAge && currentMember.age > target.maxAge) {
+        return false;
+      }
+
+      // Check blood group match
+      if (target.bloodGroup && currentMember.bloodGroup !== target.bloodGroup) {
+        return false;
+      }
+
+      // Check education match (simple inclusion check)
+      if (target.education && currentMember.education && !currentMember.education.toLowerCase().includes(target.education.toLowerCase())) {
+        return false;
+      }
+
+      // Check job match (simple inclusion check)
+      if (target.job && currentMember.job && !currentMember.job.toLowerCase().includes(target.job.toLowerCase())) {
         return false;
       }
 
@@ -195,6 +239,17 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
 
     return filtered;
   }, [announcements, categoryFilter, family, isHead, currentUserName]);
+
+  // ... (renderHome, renderFamily, renderPayments, renderSupport omitted for brevity, will be kept by tool) ...
+  // Wait, I need to replace the whole chunk or be careful. The instruction says "Update newMember state and Add Member modal form...".
+  // I will just replace the top state part and the handleSubmit, then I'll use another call for the modal JSX.
+  // Actually, let's try to just replace the state definition and handleSubmit, and also getStatusBadge since it was in the range.
+  // The tool works best with contiguous blocks.
+  // Let me replace from line 30 to line 82 (handleSubmit end) to include state and handler.
+
+  // Actually, I can replace the whole file content for the Modal part later.
+  // Let's do state + handlers first.
+
 
   const getYouTubeId = (url: string) => {
     if (!url) return null;
@@ -592,6 +647,37 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                   value={newMember.name} onChange={e => setNewMember({ ...newMember, name: e.target.value })}
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                  <input type="date" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    value={newMember.dob}
+                    onChange={e => {
+                      const dob = e.target.value;
+                      // Auto calculate age
+                      let age = 0;
+                      if (dob) {
+                        const birthDate = new Date(dob);
+                        const today = new Date();
+                        age = today.getFullYear() - birthDate.getFullYear();
+                        const m = today.getMonth() - birthDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                          age--;
+                        }
+                      }
+                      setNewMember({ ...newMember, dob, age: age > 0 ? age : 0 });
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Age (Auto)</label>
+                  <input required type="number" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-gray-50"
+                    value={newMember.age} onChange={e => setNewMember({ ...newMember, age: parseInt(e.target.value) })}
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Relation</label>
@@ -607,12 +693,60 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                  <input required type="number" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                    value={newMember.age} onChange={e => setNewMember({ ...newMember, age: parseInt(e.target.value) })}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+                  <select className="w-full border border-gray-300 rounded-lg p-2 text-sm outline-none"
+                    value={newMember.bloodGroup || 'Unknown'} onChange={e => setNewMember({ ...newMember, bloodGroup: e.target.value as any })}
+                  >
+                    <option value="Unknown">Unknown</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Education</label>
+                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    placeholder="e.g. B.Tech"
+                    value={newMember.education} onChange={e => setNewMember({ ...newMember, education: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Job</label>
+                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    placeholder="e.g. Engineer"
+                    value={newMember.job} onChange={e => setNewMember({ ...newMember, job: e.target.value })}
                   />
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+                  <select className="w-full border border-gray-300 rounded-lg p-2 text-sm outline-none"
+                    value={newMember.maritalStatus} onChange={e => setNewMember({ ...newMember, maritalStatus: e.target.value as any })}
+                  >
+                    <option>Single</option>
+                    <option>Married</option>
+                    <option>Divorced</option>
+                    <option>Widowed</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email (Optional)</label>
+                  <input type="email" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    value={newMember.email} onChange={e => setNewMember({ ...newMember, email: e.target.value })}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                 <div className="flex gap-4">
@@ -646,8 +780,8 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
       {/* Edit Member Modal */}
       {isEditModalOpen && editingMember && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden animate-fadeIn">
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+          <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden animate-fadeIn max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
               <h3 className="font-bold text-lg">Edit Member</h3>
               <button onClick={() => { setIsEditModalOpen(false); setEditingMember(null); }} className="text-gray-400 hover:text-gray-600">×</button>
             </div>
@@ -662,6 +796,36 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                   onChange={e => setEditingMember({ ...editingMember, name: e.target.value })}
                 />
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                  <input type="date" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={editingMember.dob || ''}
+                    onChange={e => {
+                      const dob = e.target.value;
+                      let age = editingMember.age;
+                      if (dob) {
+                        const birthDate = new Date(dob);
+                        const today = new Date();
+                        age = today.getFullYear() - birthDate.getFullYear();
+                        const m = today.getMonth() - birthDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                          age--;
+                        }
+                      }
+                      setEditingMember({ ...editingMember, dob, age: age > 0 ? age : 0 });
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Age (Auto)</label>
+                  <input required type="number" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50"
+                    value={editingMember.age} onChange={e => setEditingMember({ ...editingMember, age: parseInt(e.target.value) })}
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Relation</label>
@@ -680,16 +844,62 @@ const FamilyDashboard: React.FC<FamilyDashboardProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                  <input
-                    required
-                    type="number"
-                    className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                    value={editingMember.age}
-                    onChange={e => setEditingMember({ ...editingMember, age: parseInt(e.target.value) })}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+                  <select
+                    className="w-full border border-gray-300 rounded-lg p-2 text-sm outline-none"
+                    value={editingMember.bloodGroup || 'Unknown'}
+                    onChange={e => setEditingMember({ ...editingMember, bloodGroup: e.target.value as any })}
+                  >
+                    <option value="Unknown">Unknown</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Education</label>
+                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="e.g. B.Tech"
+                    value={editingMember.education || ''} onChange={e => setEditingMember({ ...editingMember, education: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Job</label>
+                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    placeholder="e.g. Engineer"
+                    value={editingMember.job || ''} onChange={e => setEditingMember({ ...editingMember, job: e.target.value })}
                   />
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+                  <select className="w-full border border-gray-300 rounded-lg p-2 text-sm outline-none"
+                    value={editingMember.maritalStatus || 'Single'} onChange={e => setEditingMember({ ...editingMember, maritalStatus: e.target.value as any })}
+                  >
+                    <option>Single</option>
+                    <option>Married</option>
+                    <option>Divorced</option>
+                    <option>Widowed</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input type="email" className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    value={editingMember.email || ''} onChange={e => setEditingMember({ ...editingMember, email: e.target.value })}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                 <div className="flex gap-4">
