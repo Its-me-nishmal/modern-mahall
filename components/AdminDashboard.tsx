@@ -130,6 +130,36 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [expandedFamilies, setExpandedFamilies] = useState<string[]>([]);
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
 
+  // Report State
+  const [reportType, setReportType] = useState<'members' | 'financial'>('members');
+  const [exportFormat, setExportFormat] = useState<'pdf' | 'excel'>('pdf');
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Member Report Filters
+  const [memberReportFilters, setMemberReportFilters] = useState({
+    wards: [] as string[],
+    gender: 'All' as 'Male' | 'Female' | 'All',
+    minAge: '',
+    maxAge: '',
+    bloodGroup: 'All',
+    maritalStatus: 'All',
+    rationCardType: 'All',
+    education: '',
+    job: ''
+  });
+
+  // Financial Report Filters
+  const [financialReportFilters, setFinancialReportFilters] = useState({
+    dateRange: {
+      start: '',
+      end: ''
+    },
+    paymentStatus: 'All' as 'Paid' | 'Pending' | 'All',
+    wards: [] as string[],
+    minAmount: '',
+    maxAmount: ''
+  });
+
   const selectedFamily = useMemo(() =>
     families.find(f => f.id === selectedFamilyId),
     [families, selectedFamilyId]);
@@ -1919,36 +1949,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   );
 
   const renderReports = () => {
-    // Report Filter State
-    const [reportType, setReportType] = useState<'members' | 'financial'>('members');
-    const [exportFormat, setExportFormat] = useState<'pdf' | 'excel'>('pdf');
-    const [isExporting, setIsExporting] = useState(false);
-
-    // Member Report Filters
-    const [memberReportFilters, setMemberReportFilters] = useState({
-      wards: [] as string[],
-      gender: 'All' as 'Male' | 'Female' | 'All',
-      minAge: '',
-      maxAge: '',
-      bloodGroup: 'All',
-      maritalStatus: 'All',
-      rationCardType: 'All',
-      education: '',
-      job: ''
-    });
-
-    // Financial Report Filters
-    const [financialReportFilters, setFinancialReportFilters] = useState({
-      dateRange: {
-        start: '',
-        end: ''
-      },
-      paymentStatus: 'All' as 'Paid' | 'Pending' | 'All',
-      wards: [] as string[],
-      minAmount: '',
-      maxAmount: ''
-    });
-
     const handleExport = async () => {
       setIsExporting(true);
       try {
@@ -2016,8 +2016,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <button
             onClick={() => setReportType('members')}
             className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${reportType === 'members'
-                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md'
+              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
               }`}
           >
             <Users className="w-5 h-5 inline mr-2" />
@@ -2026,8 +2026,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <button
             onClick={() => setReportType('financial')}
             className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${reportType === 'financial'
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+              ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+              : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
               }`}
           >
             <DollarSign className="w-5 h-5 inline mr-2" />
@@ -2061,8 +2061,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         setMemberReportFilters({ ...memberReportFilters, wards: newWards });
                       }}
                       className={`px-3 py-1 rounded-full text-xs font-bold border ${memberReportFilters.wards.includes(w)
-                          ? 'bg-emerald-600 text-white border-emerald-600'
-                          : 'bg-white text-gray-500 border-gray-200'
+                        ? 'bg-emerald-600 text-white border-emerald-600'
+                        : 'bg-white text-gray-500 border-gray-200'
                         }`}
                     >
                       {w}
@@ -2244,8 +2244,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         setFinancialReportFilters({ ...financialReportFilters, wards: newWards });
                       }}
                       className={`px-3 py-1 rounded-full text-xs font-bold border ${financialReportFilters.wards.includes(w)
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-white text-gray-500 border-gray-200'
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-500 border-gray-200'
                         }`}
                     >
                       {w}
@@ -2289,8 +2289,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <button
               onClick={() => setExportFormat('pdf')}
               className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'pdf'
-                  ? 'border-red-500 bg-red-50 text-red-700'
-                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                ? 'border-red-500 bg-red-50 text-red-700'
+                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                 }`}
             >
               <FileText className="w-5 h-5 inline mr-2" />
@@ -2299,8 +2299,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <button
               onClick={() => setExportFormat('excel')}
               className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all border-2 ${exportFormat === 'excel'
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                ? 'border-green-500 bg-green-50 text-green-700'
+                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                 }`}
             >
               <FileText className="w-5 h-5 inline mr-2" />
@@ -2312,10 +2312,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             onClick={handleExport}
             disabled={isExporting}
             className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all ${isExporting
-                ? 'bg-gray-400 cursor-not-allowed'
-                : reportType === 'members'
-                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:shadow-lg'
-                  : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : reportType === 'members'
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:shadow-lg'
+                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg'
               }`}
           >
             {isExporting ? (
